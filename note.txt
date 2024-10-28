@@ -1,0 +1,2 @@
+mongo DB ni terminal orqali start berish "sudo systemctl start mongod"
+qayta ishlatish uchun "sudo systemctl daemon-reload"

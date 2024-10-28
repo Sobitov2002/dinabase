@@ -15,7 +15,7 @@ app.get('/', (req, res) => {
     res.send('Welcome to dina academy');
 })
 
-const PORT = 3007 || process.env.PORT;
+const PORT = 3008 || process.env.PORT;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 })
