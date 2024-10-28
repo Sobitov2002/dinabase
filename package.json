@@ -1,0 +1,25 @@
+{
+  "name": "dina-academy",
+  "version": "1.0.0",
+  "description": "express backend for educational platform",
+  "main": "index.js",
+  "scripts": {
+    "test": "dev",
+    "start": "node ./src/index.js",
+    "dev": "nodemon ./src/index.js"
+  },
+  "keywords": [
+    "express"
+  ],
+  "author": "Muhammadali",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "express": "^4.21.1",
+    "express-validator": "^7.2.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.7.3",
+    "nodemon": "^3.1.7"
+  },
+  "type": "module"
+}
