@@ -1,16 +1,22 @@
 import { Router } from "express";
 import { checkSchema, validationResult, matchedData } from "express-validator";
-import { adminValidation } from "../utils/validation.js";
+import { userValidation } from "../utils/validation.js";
 import { generateSequence } from '../utils/sequenceGenerator.js';
 import { hashPassword } from "../utils/hashPassword.js";
-import { Admin } from "../mongoose/schemas/admin.js";
+import { User } from "../mongoose/schemas/user.js";
+import { verifyAdmin } from "../utils/verifyAdmin.js";
 const router = Router();
 
-router.get('/admin', (req, res) => {
-    res.send('Welcome to admin panel');
+router.get('/admin', async (req, res) => {
+    try {
+        const data = await User.find(); 
+        res.send(data);
+    } catch (error) {
+        res.send(error);
+    }
 })
 
-router.post('/admin', checkSchema(adminValidation), async (req, res) => {
+router.post('/admin', verifyAdmin, checkSchema(userValidation), async (req, res) => {
     try {
         const err = validationResult(req);
         if (!err.isEmpty()) {
@@ -23,7 +29,7 @@ router.post('/admin', checkSchema(adminValidation), async (req, res) => {
             _id: newId,
             ...data
         }
-        const admin = new Admin(newData);
+        const admin = new User(newData);
         await admin.save();
         res.send(admin);
     } catch (error) {
@@ -31,7 +37,7 @@ router.post('/admin', checkSchema(adminValidation), async (req, res) => {
     }
 })
 
-router.put('/admin/:id', checkSchema(adminValidation), async (req, res) => {
+router.put('/admin/:id', verifyAdmin, checkSchema(userValidation), async (req, res) => {
     try {
         const err = validationResult(req);
         if (!err.isEmpty()) {
@@ -42,16 +48,16 @@ router.put('/admin/:id', checkSchema(adminValidation), async (req, res) => {
         const newData = {
             ...data
         }
-        const admin = await Admin.findByIdAndUpdate(req.params.id, newData, { new: true });
+        const admin = await User.findByIdAndUpdate(req.params.id, newData, { new: true });
         res.send(admin);
     } catch (error) {
         res.send(error);
     }
 })
 
-router.delete('/admin/:id', async (req, res) => {
+router.delete('/admin/:id', verifyAdmin, async (req, res) => {
     try {
-        const admin = await Admin.findByIdAndDelete(req.params.id);
+        const admin = await User.findByIdAndDelete(req.params.id);
         res.send("Data deleted successfully");
     } catch (error) {
         res.send(error);
