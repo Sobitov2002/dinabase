@@ -13,7 +13,7 @@ const userSchema = new mongoose.Schema({
     password: String,
     phone: String,
     telegram_id: String,
-    group_ids: [{type: mongoose.Schema.Types.ObjectId, ref: 'Group'}]
+    group_ids: [Number]
 })
 
 export const User = mongoose.model('User', userSchema);

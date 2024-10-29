@@ -9,7 +9,7 @@ const router = Router();
 
 router.get('/admin', async (req, res) => {
     try {
-        const data = await User.find(); 
+        const data = (await User.find()).filter(user => user.role === 'admin'); 
         res.send(data);
     } catch (error) {
         res.send(error);

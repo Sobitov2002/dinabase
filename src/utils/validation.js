@@ -32,6 +32,19 @@ export const userValidation = {
             errorMessage: "Password must be at least 6 characters long"
         },
 
+    },
+    phone: {
+        isString: {
+            errorMessage: "Phone must be a string"
+        }
+    },
+    telegram_id: {
+        isString: {
+            errorMessage: "Telegram id must be a string"
+        }
+    },
+    group_ids: {
+    
     }
 }
 
