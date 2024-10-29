@@ -18,22 +18,23 @@ export const adminValidation = {
         notEmpty: {
             errorMessage: "Login must be not empty"
         },
+        isLength: {
+            options: { min: 5 },
+            errorMessage: "Login must be at least 5 characters long"
+        },
         unique: {
             errorMessage: "Login must be unique"
-        },
-        option: {
-            min: 5,
-            errorMessage: "Login must be at least 5 characters long"
         }
     },
     password:{
         notEmpty: {
             errorMessage: "Password must be not empty"
         },
-        option: {
-            min: 6,
+        isLength: {
+            option: { min: 6 },
             errorMessage: "Password must be at least 6 characters long"
-        }
+        },
+
     }
 }
 
@@ -215,3 +216,33 @@ export const paymentValidation = {
         }
     }
 }
+
+export const attendanceValidation = {
+    status: {
+        notEmpty: {
+            errorMessage: "Status must be not empty"
+        }
+    },
+    homework: {
+        notEmpty: {
+            errorMessage: "Homework must be not empty"
+        }
+    },
+    data: {
+        notEmpty: {
+            errorMessage: "Data must be not empty"
+        }
+    },
+    student_id: {
+        notEmpty: {
+            errorMessage: "Student must be not empty"
+        }
+    },
+    group_id: {
+        notEmpty: {
+            errorMessage: "Group must be not empty"
+        }
+    },
+}
+
+

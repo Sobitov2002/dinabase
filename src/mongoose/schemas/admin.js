@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import userStatus from '../../constants/index.js'
+import {userStatus} from '../../constants/index.js'
 
 const adminSchema = new mongoose.Schema({
     _id: Number,
@@ -9,8 +9,8 @@ const adminSchema = new mongoose.Schema({
     password: String,
     status: {
         type: String,
-        enum: userStatus,
-        default: userStatus[0]
+        enum: ['admin', 'student'],
+        default: 'admin'
     }
 })
 

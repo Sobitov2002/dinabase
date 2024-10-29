@@ -1,5 +1,6 @@
 import express from "express";
 import mongoose from "mongoose";
+import router from "./router/index.js";
 
 const app = express();
 
@@ -10,6 +11,7 @@ mongoose
 
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
+app.use(router);
 
 app.get('/', (req, res) => {
     res.send('Welcome to dina academy');
