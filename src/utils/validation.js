@@ -21,9 +21,6 @@ export const adminValidation = {
         isLength: {
             options: { min: 5 },
             errorMessage: "Login must be at least 5 characters long"
-        },
-        unique: {
-            errorMessage: "Login must be unique"
         }
     },
     password:{
@@ -57,9 +54,6 @@ export const studentValidation = {
     login: {
         notEmpty: {
             errorMessage: "Login must be not empty"
-        },
-        unique: {
-            errorMessage: "Login must be unique"
         },
         option: {
             min: 5,
