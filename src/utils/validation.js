@@ -130,4 +130,22 @@ export const attendanceValidation = {
     },
 }
 
+export const loginValidation = {
+    login: {
+        notEmpty: {
+            errorMessage: "Login must be not empty"
+        },
+        isString: {
+            errorMessage: "Login must be a string"
+        }
+    },
+    password: {
+        notEmpty: {
+            errorMessage: "Password must be not empty"
+        },
+        isString: {
+            errorMessage: "Password must be a string"
+        }
+    }
+}
 
