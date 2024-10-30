@@ -22,7 +22,7 @@ router.post('/auth/login', checkSchema(loginValidation), async (req, res) => {
         if (!await comparePassword(data.password, user.password)) return res.status(401).send('Wrong password');
         const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET);
 
-        res.send({auth: true, token: token, role: user.role});
+        res.send({token: token, role: user.role});
     } catch (error) {
         res.send(error);
     }
