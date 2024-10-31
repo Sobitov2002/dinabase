@@ -4,12 +4,24 @@ import { groupValidation } from "../utils/validation.js";
 import { Group } from "../mongoose/schemas/group.js";
 import { generateSequence } from '../utils/sequenceGenerator.js';
 import { verifyAdminOrTeacher } from "../utils/verifyAdminOrTeacher.js";
+import { User } from "../mongoose/schemas/user.js";
 
 const router = Router();
 
 router.get('/group', async (req, res) => {
     const data = await Group.find();
     res.send(data);
+})
+
+router.get('/group/teacher', async (req, res) => {
+    const teacherId = 6;
+    try {
+        const teacherGropusIds = await User.find({_id: teacherId, role: 'teacher'}).select('group_ids');
+        const groups = await Group.find({ _id: { $in: teacherGropusIds[0].group_ids } });
+        res.status(200).send(groups);
+    } catch (error) {
+        res.status(500).send(error);
+    }
 })
 
 router.post('/group', checkSchema(groupValidation), async (req, res) => {
