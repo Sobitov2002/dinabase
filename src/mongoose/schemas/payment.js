@@ -5,9 +5,8 @@ const paymentSchema = mongoose.Schema({
     status: Boolean,
     amount: Number,
     month: Date,
-    student_id: Schema.ObjectId,
-    group_id: Schema.ObjectId,
-    admin_id: Schema.ObjectId
+    student_id: Number,
+    group_id: Number,
 })
 
 export const Payment = mongoose.model('Payment', paymentSchema)
