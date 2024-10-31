@@ -5,14 +5,26 @@ import { generateSequence } from '../utils/sequenceGenerator.js';
 
 const router = Router();
 
+router.post('/attendance/group', async (req, res) => {
+    const groupId = 2;
+    const day = '02.10.2024';
+    try {
+        const data = await Attendance.find({ group_id: groupId, data: day });
+        res.status(200).send(data);
+    } catch (error) {
+        res.status(500).send(error);
+    }
+})
+
 router.get('/attendance', async (req, res) => {
     try {
         const data = await Attendance.find();
-        res.send(data);
+        res.status(200).send(data);
     } catch (error) {
-        res.send(error);
+        res.status(500).send(error);
     }
 })
+
 router.post('/attendance', async (req, res) => {
     const attendanceRecords = req.body;
     
