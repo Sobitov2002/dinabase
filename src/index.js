@@ -20,5 +20,5 @@ app.get('/', (req, res) => {
 
 const PORT = 3002 || process.env.PORT;
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+    console.log(`Server is running on http://172.27.7.255:${PORT}`);
 })

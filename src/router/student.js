@@ -8,7 +8,8 @@ import {verifyAdminOrTeacher} from "../utils/verifyAdminOrTeacher.js";
 
 const router = Router();
 
-router.get('/student', async(req, res) => {
+
+router.get('/student', async (req, res) => {
     try {
         const user = (await User.find()).filter(user => user.role === 'student');
         res.send(user);
@@ -17,7 +18,15 @@ router.get('/student', async(req, res) => {
     }
 })
 
-router.post('/student', verifyAdminOrTeacher, checkSchema(userValidation), async (req, res) => {
+router.post('/student/attendance', async(req, res) => {
+    const teacher_id = 6;
+    const teacher = await User.findById(teacher_id);
+    const teacher_groups = teacher.group_ids;
+    const students = await User.find({group_ids: {$in: teacher_groups}, role: 'student'});
+    res.send(students);
+})
+
+router.post('/student/create',  checkSchema(userValidation), async (req, res) => {
     const err = validationResult(req);
     if (!err.isEmpty()) {
         return res.status(422).send(err);
@@ -25,7 +34,7 @@ router.post('/student', verifyAdminOrTeacher, checkSchema(userValidation), async
     const data = matchedData(req);
     data.password = await hashPassword(data.password);
     try {
-        const newId = await generateSequence('student');
+        const newId = await generateSequence('user');
         const newData = {
             _id: newId,
             ...data

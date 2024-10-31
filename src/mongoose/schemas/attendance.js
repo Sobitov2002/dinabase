@@ -5,10 +5,10 @@ const attendanceSchema = mongoose.Schema({
     status: Boolean,
     homework: Boolean,
     data: Date,
-    teacher_id: Schema.ObjectId,
-    student_id: Schema.ObjectId,
-    group_id: Schema.ObjectId,
-    admin_id: Schema.ObjectId,
+    teacher_id: Number,
+    student_id: Number,
+    group_id: Number,
+    isActive: Boolean
 })
 
 export const Attendance = mongoose.model('Attendance', attendanceSchema)

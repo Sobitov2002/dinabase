@@ -40,7 +40,7 @@ export const userValidation = {
     },
     telegram_id: {
         isString: {
-            errorMessage: "Telegram id must be a string"
+            errorMessage:  "TelegramId must be string"
         }
     },
     group_ids: {

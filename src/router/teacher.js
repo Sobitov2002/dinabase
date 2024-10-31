@@ -24,8 +24,10 @@ router.post('/teacher', checkSchema(userValidation), async (req, res) => {
             return res.status(422).send(err);
         }
         const data = matchedData(req);
+        
+        
         data.password = await hashPassword(data.password);
-        const newId = await generateSequence('teacher');
+        const newId = await generateSequence('user');
         const newData = {
             _id: newId,
             ...data
@@ -34,7 +36,7 @@ router.post('/teacher', checkSchema(userValidation), async (req, res) => {
         await teacher.save();
         res.send(teacher);
     } catch (error) {
-        res.send(error);
+        res.status(500).send(error);
     }
 })
 

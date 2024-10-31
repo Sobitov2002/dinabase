@@ -7,8 +7,9 @@ import { verifyAdminOrTeacher } from "../utils/verifyAdminOrTeacher.js";
 
 const router = Router();
 
-router.get('/group', (req, res) => {
-    res.send('Welcome to group panel');
+router.get('/group', async (req, res) => {
+    const data = await Group.find();
+    res.send(data);
 })
 
 router.post('/group', checkSchema(groupValidation), async (req, res) => {
@@ -17,14 +18,16 @@ router.post('/group', checkSchema(groupValidation), async (req, res) => {
         if (!err.isEmpty()) return res.status(422).send(err);
         
         const data = matchedData(req);
+        
         const newId = await generateSequence('group');
         const newData = {
             _id: newId,
             ...data
-        }
+        }        
         const group = new Group(newData);
         await group.save();
-        res.send(group);
+        console.log(group);
+        res.send("Group created successfully");
     } catch (error) {
         res.send(error);
     }

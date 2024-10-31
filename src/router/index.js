@@ -4,7 +4,7 @@ import student from './student.js'
 import teacher from './teacher.js'
 import group from './group.js'
 // import payment from './payment.js'
-// import attendance from './attendance.js'
+import attendance from './attendance.js'
 import book from './book.js';
 import admin from './admin.js';
 
@@ -16,7 +16,7 @@ router.use(student)
 router.use(teacher)
 router.use(group);
 // router.use(payment)
-// router.use(attendance)
+router.use(attendance)
 router.use(book);
 router.use(admin);
 

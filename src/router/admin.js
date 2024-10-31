@@ -16,7 +16,16 @@ router.get('/admin', async (req, res) => {
     }
 })
 
-router.post('/admin', verifyAdmin, checkSchema(userValidation), async (req, res) => {
+router.get('/users', async (req, res) => {
+    try {
+        const data = await User.find(); 
+        res.send(data);
+    } catch (error) {
+        res.send(error);
+    }
+})
+
+router.post('/admin',  checkSchema(userValidation), async (req, res) => {
     try {
         const err = validationResult(req);
         if (!err.isEmpty()) {
@@ -24,7 +33,7 @@ router.post('/admin', verifyAdmin, checkSchema(userValidation), async (req, res)
         }
         const data = matchedData(req);
         data.password = await hashPassword(data.password);
-        const newId = await generateSequence('admin');
+        const newId = await generateSequence('user');
         const newData = {
             _id: newId,
             ...data
