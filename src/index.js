@@ -1,9 +1,13 @@
+import dotenv from 'dotenv';
 import express from "express";
 import mongoose from "mongoose";
 import router from "./router/index.js";
 
+dotenv.config();
+
 const app = express();
-const MongoDB_URI = 'mongodb+srv://muhammadali0210:nQmAJ9J9fzArxyRB@dina-backend.nm7jw.mongodb.net/?retryWrites=true&w=majority&appName=dina-backend'
+const PORT = process.env.PORT
+const MongoDB_URI = process.env.MONGODB_URI
 // 'mongodb://localhost/dina-academy'
 mongoose
     .connect(MongoDB_URI)
@@ -19,7 +23,6 @@ app.get('/', (req, res) => {
 })
 
 
-const PORT = 3002
 app.listen(PORT, () => {
     console.log(`Server is running on ${PORT}`);
     console.log(`key: ${MongoDB_URI}`);
