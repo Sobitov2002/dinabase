@@ -5,7 +5,7 @@
     "description": "API documentation without extensive annotations",
     "version": "1.0.0"
   },
-  "host": "dina-academy-production.up.railway.app/",
+  "host": "dina-academy-production.up.railway.app",
   "basePath": "/",
   "schemes": [
     "http",
