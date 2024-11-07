@@ -16,13 +16,12 @@ router.post('/auth/login', checkSchema(loginValidation), async (req, res) => {
         }
         const data = matchedData(req);
         const user = await User.findOne({login: data.login});
-        console.log(user);
         
         if (!user) return res.status(404).send('User not found');
         if (!await comparePassword(data.password, user.password)) return res.status(401).send('Wrong password');
         const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET);
 
-        res.send({token: token, role: user.role});
+        res.send({token: token, role: user.role, first_name: user.first_name, last_name: user.last_name});
     } catch (error) {
         res.send(error);
     }
