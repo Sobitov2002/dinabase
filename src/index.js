@@ -3,9 +3,10 @@ import mongoose from "mongoose";
 import router from "./router/index.js";
 
 const app = express();
-
+const MongoDB_URI = 'mongodb+srv://muhammadali0210:nQmAJ9J9fzArxyRB@dina-backend.nm7jw.mongodb.net/?retryWrites=true&w=majority&appName=dina-backend'
+// 'mongodb://localhost/dina-academy'
 mongoose
-    .connect('mongodb://localhost/dina-academy')
+    .connect(MongoDB_URI)
     .then(() => console.log('MongoDB connected'))
     .catch(err =>  console.log(err))
 
@@ -18,7 +19,9 @@ app.get('/', (req, res) => {
 })
 
 
-const PORT = 3002 || process.env.PORT;
+const PORT = 3002
 app.listen(PORT, () => {
-    console.log(`Server is running on http://172.27.7.255:${PORT}`);
+    console.log(`Server is running on ${PORT}`);
+    console.log(`key: ${MongoDB_URI}`);
+    
 })
