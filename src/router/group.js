@@ -24,6 +24,15 @@ router.get('/group/teacher', async (req, res) => {
     }
 })
 
+router.get("/group/:id", async (req, res) => {
+    try {
+        const group = await Group.findById(req.params.id);
+        res.send(group);
+    } catch (error) {
+        res.send(error);
+    }
+})
+
 router.post('/group', checkSchema(groupValidation), async (req, res) => {
     try {
         const err = validationResult(req);
