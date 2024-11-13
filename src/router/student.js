@@ -9,31 +9,45 @@ import {verifyAdminOrTeacher} from "../utils/verifyAdminOrTeacher.js";
 const router = Router();
 
 
-router.get('/student', async (req, res) => {
+router.get('/student', verifyAdmin, async (req, res) => {
     try {
-        const user = (await User.find()).filter(user => user.role === 'student');
-        res.send(user);
+        const data = (await User.find()).filter(user => user.role === 'student');
+        res.send(data);
     } catch (error) {
         res.send(error);
     }
 })
 
-router.post('/student/attendance', async(req, res) => {
-    const teacher_id = 6;
-    const teacher = await User.findById(teacher_id);
-    const teacher_groups = teacher.group_ids;
-    const students = await User.find({group_ids: {$in: teacher_groups}, role: 'student'});
-    res.send(students);
+router.get('/student/:id', verifyAdmin, async (req, res) => {
+    try {
+        const dataId = req.params.id;
+        const findUser = await User.findOne({_id: dataId, role: 'student'});
+        const data = {
+            _id: findUser._id,
+            first_name: findUser.first_name,
+            last_name: findUser.last_name,
+            login: findUser.login,
+            phone: findUser.phone,
+            group_ids: findUser.group_ids
+        }
+        res.send(data);
+    } catch (error) {
+        
+    }
 })
 
-router.post('/student/create',  checkSchema(userValidation), async (req, res) => {
-    const err = validationResult(req);
-    if (!err.isEmpty()) {
-        return res.status(422).send(err);
-    }
-    const data = matchedData(req);
-    data.password = await hashPassword(data.password);
+
+
+router.post('/student', verifyAdmin, checkSchema(userValidation), async (req, res) => {
     try {
+        const err = validationResult(req);
+        if (!err.isEmpty()) {
+            return res.status(422).send(err);
+        }
+        const data = matchedData(req);
+        
+        
+        data.password = await hashPassword(data.password);
         const newId = await generateSequence('user');
         const newData = {
             _id: newId,
@@ -43,31 +57,29 @@ router.post('/student/create',  checkSchema(userValidation), async (req, res) =>
         await student.save();
         res.send(student);
     } catch (error) {
-        res.send(error);
+        res.status(500).send(error);
     }
 })
 
-router.put('/student/:id', verifyAdminOrTeacher, checkSchema(userValidation), async (req, res) => {
+router.put('/student/:id', verifyAdmin, async (req, res) => {
     try {
-        const err = validationResult(req);
-        if (!err.isEmpty()) {
-            return res.status(422).send(err);
-        }
-        const data = matchedData(req);
-        data.password = await hashPassword(data.password);
-        const newData = {
-            ...data
-        }
-        const student = await User.findByIdAndUpdate(req.params.id, newData, { new: true });
-        res.send(student);
+        const { id } = req.params;
+        const { first_name, last_name, login, phone, telegram_id, group_ids } = req.body;
+
+        const updatedUser = await User.findByIdAndUpdate(
+            id,
+            { first_name, last_name, login, phone, telegram_id, group_ids }, 
+            { new: true, runValidators: true } 
+        );
+        res.send({ message: "Data updated successfully"});
     } catch (error) {
         res.send(error);
     }
 })
 
-router.delete('/student/:id', verifyAdminOrTeacher, async (req, res) => {
+router.delete('/student/:id', verifyAdmin, async (req, res) => {
     try {
-        const student = await User.findByIdAndDelete(req.params.id);
+        const student = await User.findByIdAndDelete({ _id: req.params.id, role: 'student' });
         res.send("Data deleted successfully");
     } catch (error) {
         res.send(error);
