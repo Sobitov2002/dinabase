@@ -20,6 +20,11 @@ router.get('/teacher', verifyAdmin, async (req, res) => {
 router.get('/teacher/:id', verifyAdmin, async (req, res) => {
     try {
         const teacher = await User.findById({ _id: req.params.id, role: 'teacher' });
+        if (!teacher) {
+            return res.status(404).send('Teacher not found');
+        }
+        const password = await hashPassword(teacher.password, false);
+        teacher.password = password;
         res.send(teacher);
     } catch (error) {
         res.send(error);
