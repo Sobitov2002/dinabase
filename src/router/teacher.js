@@ -8,7 +8,7 @@ import { verifyAdmin } from "../utils/verifyAdmin.js";
 
 const router = Router();
 
-router.get('/teacher', verifyAdmin, async (req, res) => {
+router.get('/teacher', async (req, res) => {
     try {
         const data = (await User.find()).filter(user => user.role === 'teacher');
         res.send(data);
@@ -17,19 +17,25 @@ router.get('/teacher', verifyAdmin, async (req, res) => {
     }
 })
 
-router.get('/teacher/:id', verifyAdmin, async (req, res) => {
+router.get('/teacher/:id', async (req, res) => {
     try {
-        const teacher = await User.findById({ _id: req.params.id, role: 'teacher' });
-        if (!teacher) {
-            return res.status(404).send('Teacher not found');
+        const dataId = req.params.id;
+        const findUser = await User.findOne({_id: dataId, role: 'teacher'});
+        const data = {
+            _id: findUser._id,
+            first_name: findUser.first_name,
+            last_name: findUser.last_name,
+            login: findUser.login,
+            phone: findUser.phone,
+            group_ids: findUser.group_ids
         }
-        const password = await hashPassword(teacher.password, false);
-        teacher.password = password;
-        res.send(teacher);
+        res.send(data);
     } catch (error) {
-        res.send(error);
+        
     }
 })
+
+
 
 router.post('/teacher', verifyAdmin, checkSchema(userValidation), async (req, res) => {
     try {
@@ -54,19 +60,17 @@ router.post('/teacher', verifyAdmin, checkSchema(userValidation), async (req, re
     }
 })
 
-router.put('/teacher/:id', verifyAdmin, checkSchema(userValidation), async (req, res) => {
+router.put('/teacher/:id', async (req, res) => {
     try {
-        const err = validationResult(req);
-        if (!err.isEmpty()) {
-            return res.status(422).send(err);
-        }
-        const data = matchedData(req);
-        data.password = await hashPassword(data.password);
-        const newData = {
-            ...data
-        }
-        const teacher = await User.findByIdAndUpdate(req.params.id, newData, { new: true });
-        res.send(teacher);
+        const { id } = req.params;
+        const { first_name, last_name, login, phone, group_ids } = req.body;
+
+        const updatedUser = await User.findByIdAndUpdate(
+            id,
+            { first_name, last_name, login, phone, group_ids }, 
+            { new: true, runValidators: true } 
+        );
+        res.send({ message: "Data updated successfully"});
     } catch (error) {
         res.send(error);
     }
