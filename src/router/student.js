@@ -9,7 +9,7 @@ import {verifyAdminOrTeacher} from "../utils/verifyAdminOrTeacher.js";
 const router = Router();
 
 
-router.get('/student', verifyAdmin, async (req, res) => {
+router.get('/student', verifyAdminOrTeacher, async (req, res) => {
     try {
         const data = (await User.find()).filter(user => user.role === 'student');
         res.send(data);
@@ -18,7 +18,7 @@ router.get('/student', verifyAdmin, async (req, res) => {
     }
 })
 
-router.get('/student/:id', verifyAdmin, async (req, res) => {
+router.get('/student/:id', verifyAdminOrTeacher, async (req, res) => {
     try {
         const dataId = req.params.id;
         const findUser = await User.findOne({_id: dataId, role: 'student'});
@@ -38,7 +38,7 @@ router.get('/student/:id', verifyAdmin, async (req, res) => {
 
 
 
-router.post('/student', verifyAdmin, checkSchema(userValidation), async (req, res) => {
+router.post('/student', verifyAdminOrTeacher, checkSchema(userValidation), async (req, res) => {
     try {
         const err = validationResult(req);
         if (!err.isEmpty()) {
@@ -61,7 +61,7 @@ router.post('/student', verifyAdmin, checkSchema(userValidation), async (req, re
     }
 })
 
-router.put('/student/:id', verifyAdmin, async (req, res) => {
+router.put('/student/:id', verifyAdminOrTeacher, async (req, res) => {
     try {
         const { id } = req.params;
         const { first_name, last_name, login, phone, telegram_id, group_ids } = req.body;
@@ -77,7 +77,7 @@ router.put('/student/:id', verifyAdmin, async (req, res) => {
     }
 })
 
-router.delete('/student/:id', verifyAdmin, async (req, res) => {
+router.delete('/student/:id', verifyAdminOrTeacher, async (req, res) => {
     try {
         const student = await User.findByIdAndDelete({ _id: req.params.id, role: 'student' });
         res.send("Data deleted successfully");
