@@ -17,6 +17,15 @@ router.get('/teacher', verifyAdmin, async (req, res) => {
     }
 })
 
+router.get('/teacher/:id', verifyAdmin, async (req, res) => {
+    try {
+        const teacher = await User.findById({ _id: req.params.id, role: 'teacher' });
+        res.send(teacher);
+    } catch (error) {
+        res.send(error);
+    }
+})
+
 router.post('/teacher', verifyAdmin, checkSchema(userValidation), async (req, res) => {
     try {
         const err = validationResult(req);
