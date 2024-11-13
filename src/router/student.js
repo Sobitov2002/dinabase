@@ -28,7 +28,8 @@ router.get('/student/:id', verifyAdminOrTeacher, async (req, res) => {
             last_name: findUser.last_name,
             login: findUser.login,
             phone: findUser.phone,
-            group_ids: findUser.group_ids
+            group_ids: findUser.group_ids,
+            telegram_id: findUser.telegram_id
         }
         res.send(data);
     } catch (error) {
