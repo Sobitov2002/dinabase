@@ -8,7 +8,7 @@ import { verifyAdmin } from "../utils/verifyAdmin.js";
 
 const router = Router();
 
-router.get('/teacher', async (req, res) => {
+router.get('/teacher', verifyAdmin, async (req, res) => {
     try {
         const data = (await User.find()).filter(user => user.role === 'teacher');
         res.send(data);
@@ -17,7 +17,7 @@ router.get('/teacher', async (req, res) => {
     }
 })
 
-router.post('/teacher', checkSchema(userValidation), async (req, res) => {
+router.post('/teacher', verifyAdmin, checkSchema(userValidation), async (req, res) => {
     try {
         const err = validationResult(req);
         if (!err.isEmpty()) {
@@ -60,7 +60,7 @@ router.put('/teacher/:id', verifyAdmin, checkSchema(userValidation), async (req,
 
 router.delete('/teacher/:id', verifyAdmin, async (req, res) => {
     try {
-        const teacher = await User.findByIdAndDelete(req.params.id);
+        const teacher = await User.findByIdAndDelete({ _id: req.params.id, role: 'teacher' });
         res.send("Data deleted successfully");
     } catch (error) {
         res.send(error);
