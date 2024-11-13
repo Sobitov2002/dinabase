@@ -8,7 +8,7 @@ import { verifyAdmin } from "../utils/verifyAdmin.js";
 
 const router = Router();
 
-router.get('/teacher', async (req, res) => {
+router.get('/teacher', verifyAdmin, async (req, res) => {
     try {
         const data = (await User.find()).filter(user => user.role === 'teacher');
         res.send(data);
@@ -17,7 +17,7 @@ router.get('/teacher', async (req, res) => {
     }
 })
 
-router.get('/teacher/:id', async (req, res) => {
+router.get('/teacher/:id', verifyAdmin, async (req, res) => {
     try {
         const dataId = req.params.id;
         const findUser = await User.findOne({_id: dataId, role: 'teacher'});
@@ -60,7 +60,7 @@ router.post('/teacher', verifyAdmin, checkSchema(userValidation), async (req, re
     }
 })
 
-router.put('/teacher/:id', async (req, res) => {
+router.put('/teacher/:id', verifyAdmin, async (req, res) => {
     try {
         const { id } = req.params;
         const { first_name, last_name, login, phone, group_ids } = req.body;
