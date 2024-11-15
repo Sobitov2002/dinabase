@@ -47,7 +47,7 @@ router.post('/student', verifyAdminOrTeacher, checkSchema(userValidation), async
         }
         const data = matchedData(req);
         const user = await User.findOne({login: data.login});
-        if(user) return res.status(400).send({message: "This username is already taken"});
+        if(user) return res.status(400).send({message: `Bunday foydalanuvchi mavjud - ${user.login}`});
         
         data.password = await hashPassword(data.password);
         const newId = await generateSequence('user');
@@ -67,6 +67,11 @@ router.put('/student/:id', verifyAdminOrTeacher, async (req, res) => {
     try {
         const { id } = req.params;
         const { first_name, last_name, login, phone, telegram_id, group_ids } = req.body;
+
+        const user = await User.findOne({login: login});
+        if(user){
+            if(user._id !== id) return res.status(400).send({message: `Bunday foydalanuvchi mavjud - ${user.login}`});
+        }
 
         const updatedUser = await User.findByIdAndUpdate(
             id,
