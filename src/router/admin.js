@@ -1,37 +1,53 @@
-import { Router } from "express";
+import { Router } from "express"
 import { checkSchema, validationResult, matchedData } from "express-validator";
 import { userValidation } from "../utils/validation.js";
-import { generateSequence } from '../utils/sequenceGenerator.js';
-import { hashPassword } from "../utils/hashPassword.js";
 import { User } from "../mongoose/schemas/user.js";
-import { verifyAdmin } from "../utils/verifyAdmin.js";
+import { generateSequence } from '../utils/sequenceGenerator.js';
+import { hashPassword } from "../utils/hashPassword.js";   
+import {verifyAdmin} from "../utils/verifyAdmin.js"; 
+
 const router = Router();
 
-router.get('/admin', async (req, res) => {
+
+router.get('/admin', verifyAdmin, async (req, res) => {
     try {
-        const data = (await User.find()).filter(user => user.role === 'admin'); 
+        const data = (await User.find()).filter(user => user.role === 'admin');
         res.send(data);
     } catch (error) {
         res.send(error);
     }
 })
 
-router.get('/users', async (req, res) => {
+router.get('/admin/:id', verifyAdmin, async (req, res) => {
     try {
-        const data = await User.find(); 
+        const dataId = req.params.id;
+        const findUser = await User.findOne({_id: dataId, role: 'admin'});
+        const data = {
+            _id: findUser._id,
+            first_name: findUser.first_name,
+            last_name: findUser.last_name,
+            login: findUser.login,
+            phone: findUser.phone,
+            group_ids: findUser.group_ids,
+            telegram_id: findUser.telegram_id
+        }
         res.send(data);
     } catch (error) {
-        res.send(error);
+        
     }
 })
 
-router.post('/admin',  checkSchema(userValidation), async (req, res) => {
+
+
+router.post('/admin', verifyAdmin, checkSchema(userValidation), async (req, res) => {
     try {
         const err = validationResult(req);
         if (!err.isEmpty()) {
             return res.status(422).send(err);
         }
         const data = matchedData(req);
+        
+        
         data.password = await hashPassword(data.password);
         const newId = await generateSequence('user');
         const newData = {
@@ -42,23 +58,21 @@ router.post('/admin',  checkSchema(userValidation), async (req, res) => {
         await admin.save();
         res.send(admin);
     } catch (error) {
-        res.send(error);
+        res.status(500).send(error);
     }
 })
 
-router.put('/admin/:id', verifyAdmin, checkSchema(userValidation), async (req, res) => {
+router.put('/admin/:id', verifyAdmin, async (req, res) => {
     try {
-        const err = validationResult(req);
-        if (!err.isEmpty()) {
-            return res.status(422).send(err);
-        }
-        const data = matchedData(req);
-        data.password = await hashPassword(data.password);
-        const newData = {
-            ...data
-        }
-        const admin = await User.findByIdAndUpdate(req.params.id, newData, { new: true });
-        res.send(admin);
+        const { id } = req.params;
+        const { first_name, last_name, login, phone, telegram_id } = req.body;
+
+        const updatedUser = await User.findByIdAndUpdate(
+            id,
+            { first_name, last_name, login, phone, telegram_id }, 
+            { new: true, runValidators: true } 
+        );
+        res.send({ message: "Data updated successfully"});
     } catch (error) {
         res.send(error);
     }
@@ -66,11 +80,11 @@ router.put('/admin/:id', verifyAdmin, checkSchema(userValidation), async (req, r
 
 router.delete('/admin/:id', verifyAdmin, async (req, res) => {
     try {
-        const admin = await User.findByIdAndDelete(req.params.id);
+        const admin = await User.findByIdAndDelete({ _id: req.params.id, role: 'admin' });
         res.send("Data deleted successfully");
     } catch (error) {
         res.send(error);
     }
 })
 
-export default router;
+export default router
