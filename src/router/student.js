@@ -46,7 +46,8 @@ router.post('/student', verifyAdminOrTeacher, checkSchema(userValidation), async
             return res.status(422).send(err);
         }
         const data = matchedData(req);
-        
+        const user = await User.findOne({login: data.login});
+        if(user) return res.status(400).send({message: "This username is already taken"});
         
         data.password = await hashPassword(data.password);
         const newId = await generateSequence('user');

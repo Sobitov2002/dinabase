@@ -47,6 +47,8 @@ router.post('/admin', verifyAdmin, checkSchema(userValidation), async (req, res)
         }
         const data = matchedData(req);
         
+        const user = await User.findOne({login: data.login});
+        if(user) return res.status(400).send({message: "This username is already taken"});
         
         data.password = await hashPassword(data.password);
         const newId = await generateSequence('user');
@@ -80,7 +82,9 @@ router.put('/admin/:id', verifyAdmin, async (req, res) => {
 
 router.delete('/admin/:id', verifyAdmin, async (req, res) => {
     try {
-        const admin = await User.findByIdAndDelete({ _id: req.params.id, role: 'admin' });
+        const admin = await User.findById({ _id: req.params.id, role: 'admin' });
+        if(admin.login  === 'admin') return res.status(400).send("You can't delete admin");
+        await admin.deleteOne();
         res.send("Data deleted successfully");
     } catch (error) {
         res.send(error);
