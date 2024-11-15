@@ -67,7 +67,7 @@ router.put('/teacher/:id', verifyAdmin, async (req, res) => {
         const { first_name, last_name, login, phone, group_ids } = req.body;
         const user = await User.findOne({login: login});
         if(user){
-            if(user._id !== id) return res.status(400).send({message: `Bunday foydalanuvchi mavjud - ${user.login}`});
+            if(user._id != id) return res.status(400).send({message: `Bunday foydalanuvchi mavjud - ${user.login}`});
         }
 
         const updatedUser = await User.findByIdAndUpdate(
