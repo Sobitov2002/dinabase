@@ -13,18 +13,19 @@ router.get('/group', async (req, res) => {
     res.send(data);
 })
 
-router.get('/group/teacher', async (req, res) => {
+router.get('/group/teacher', verifyAdminOrTeacher, async (req, res) => {
     const teacherId = 6;
     try {
         const teacherGropusIds = await User.find({_id: teacherId, role: 'teacher'}).select('group_ids');
         const groups = await Group.find({ _id: { $in: teacherGropusIds[0].group_ids } });
         res.status(200).send(groups);
+        
     } catch (error) {
         res.status(500).send(error);
     }
 })
 
-router.get("/group/:id", async (req, res) => {
+router.get("/group/:id", verifyAdminOrTeacher, async (req, res) => {
     try {
         const group = await Group.findById(req.params.id);
         res.send(group);
@@ -33,7 +34,7 @@ router.get("/group/:id", async (req, res) => {
     }
 })
 
-router.post('/group', checkSchema(groupValidation), async (req, res) => {
+router.post('/group', verifyAdminOrTeacher, checkSchema(groupValidation), async (req, res) => {
     try {
         const err = validationResult(req);
         if (!err.isEmpty()) return res.status(422).send(err);
@@ -54,7 +55,7 @@ router.post('/group', checkSchema(groupValidation), async (req, res) => {
     }
 })
 
-router.put('/group/:id', checkSchema(groupValidation), async (req, res) => {
+router.put('/group/:id', verifyAdminOrTeacher, checkSchema(groupValidation), async (req, res) => {
     try {
         const err = validationResult(req);
         if (!err.isEmpty()) return res.status(422).send(err);
@@ -70,7 +71,7 @@ router.put('/group/:id', checkSchema(groupValidation), async (req, res) => {
     }
 })
 
-router.delete('/group/:id', async (req, res) => {
+router.delete('/group/:id', verifyAdminOrTeacher, async (req, res) => {
     try {
         const group = await Group.findByIdAndDelete(req.params.id);
         res.send("Data deleted successfully");
