@@ -14,9 +14,14 @@ router.get('/group', async (req, res) => {
 })
 
 router.get('/group/teacher', verifyAdminOrTeacher, async (req, res) => {
-    const teacherId = 6;
+    const teacherId = req.user.id;
+    
     try {
-        const teacherGropusIds = await User.find({_id: teacherId, role: 'teacher'}).select('group_ids');
+        if(req.user.role = 'admin'){
+            const groups = await Group.find();  
+            return res.status(200).send(groups);
+        }
+        const teacherGropusIds = await User.find({_id: teacherId}).select('group_ids');
         const groups = await Group.find({ _id: { $in: teacherGropusIds[0].group_ids } });
         res.status(200).send(groups);
         

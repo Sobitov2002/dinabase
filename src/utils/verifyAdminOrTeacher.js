@@ -16,6 +16,7 @@ export function verifyAdminOrTeacher(req, res, next) {
             return res.status(401).send({ message: 'Unauthorized' });
         }
         if (decoded.role === 'admin' || decoded.role === 'teacher') {
+            req.user = decoded;
             next(); 
         } else {
             return res.status(403).send({ message: 'Forbidden' });

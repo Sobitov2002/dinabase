@@ -28,7 +28,6 @@ router.get('/admin/:id', verifyAdmin, async (req, res) => {
             last_name: findUser.last_name,
             login: findUser.login,
             phone: findUser.phone,
-            group_ids: findUser.group_ids,
             telegram_id: findUser.telegram_id
         }
         res.send(data);
@@ -49,7 +48,6 @@ router.post('/admin', verifyAdmin, checkSchema(userValidation), async (req, res)
 
         const user = await User.findOne({login: data.login});
         if(user) return res.status(400).send({message: `Bunday foydalanuvchi mavjud - ${user.login}`});
-        
         data.password = await hashPassword(data.password);
         const newId = await generateSequence('user');
         const newData = {
