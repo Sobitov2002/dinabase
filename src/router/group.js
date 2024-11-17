@@ -36,6 +36,7 @@ router.get('/group/teacher', verifyAdminOrTeacher, async (req, res) => {
                     $group: {
                         _id: '$_id',
                         name: { $first: '$name' },
+                        degree: { $first: '$degree' },
                         studentCount: {
                             $sum: {
                                 $cond: [
@@ -51,6 +52,7 @@ router.get('/group/teacher', verifyAdminOrTeacher, async (req, res) => {
                     $project: {
                         _id: 1,
                         name: 1,
+                        degree: 1,
                         studentCount: 1,
                     },
                 },
@@ -83,6 +85,7 @@ router.get('/group/teacher', verifyAdminOrTeacher, async (req, res) => {
                         $group: {
                             _id: '$_id',
                             name: { $first: '$name' },
+                            degree: { $first: '$degree' },
                             studentCount: {
                                 $sum: {
                                     $cond: [
@@ -98,6 +101,7 @@ router.get('/group/teacher', verifyAdminOrTeacher, async (req, res) => {
                         $project: {
                             _id: 1,
                             name: 1,
+                            degree: 1,
                             studentCount: 1,
                         },
                     },
