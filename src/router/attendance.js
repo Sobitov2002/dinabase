@@ -3,11 +3,12 @@ import { checkSchema, matchedData  } from "express-validator";
 import { Attendance } from '../mongoose/schemas/attendance.js'
 import { generateSequence } from '../utils/sequenceGenerator.js';
 import { User } from '../mongoose/schemas/user.js';
+import { verifyAdminOrTeacher } from "../utils/verifyAdminOrTeacher.js";
 
 const router = Router();
 
 // group_id, date bo'yicha olish
-router.post('/attendance/group', async (req, res) => {
+router.post('/attendance/group', verifyAdminOrTeacher, async (req, res) => {
     const { group_id, date } = req.body;
     const selectedDate = new Date(date).toString().split('T')[0];
 
@@ -49,7 +50,7 @@ router.post('/attendance/group', async (req, res) => {
 });
 
 // barchasi
-router.get('/attendance', async (req, res) => {
+router.get('/attendance', verifyAdminOrTeacher, async (req, res) => {
     try {
         const data = await Attendance.find();
         res.status(200).send(data);

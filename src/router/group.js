@@ -15,15 +15,93 @@ router.get('/group', async (req, res) => {
 
 router.get('/group/teacher', verifyAdminOrTeacher, async (req, res) => {
     const teacherId = req.user.id;
-    
     try {
         if(req.user.role == 'admin'){
-            const groups = await Group.find();  
-            return res.status(200).send(groups);
+            const groups = await Group.aggregate([
+                {
+                    $lookup: {
+                        from: 'users', // User kolleksiyasi nomi
+                        localField: '_id', // Group modeli `_id` maydoni
+                        foreignField: 'group_ids', // User modeli `group_ids` maydoni
+                        as: 'students', // Ulangan foydalanuvchilar saqlanadi
+                    },
+                },
+                {
+                    $unwind: {
+                        path: '$students',
+                        preserveNullAndEmptyArrays: true, // Student bo'lmasa ham guruhni saqlash
+                    },
+                },
+                {
+                    $group: {
+                        _id: '$_id',
+                        name: { $first: '$name' },
+                        studentCount: {
+                            $sum: {
+                                $cond: [
+                                    { $and: ['$students', { $eq: ['$students.role', 'student'] }] },
+                                    1,
+                                    0,
+                                ],
+                            },
+                        },
+                    },
+                },
+                {
+                    $project: {
+                        _id: 1,
+                        name: 1,
+                        studentCount: 1,
+                    },
+                },
+            ]);
+            res.status(200).json(groups);
         } else {
             if(req.user.role = 'teacher'){
-                const teacherGropusIds = await User.find({_id: teacherId, role: 'teacher'}).select('group_ids');
-                const groups2 = await Group.find({ _id: { $in: teacherGropusIds[0].group_ids } });
+                const choosenGroupIds = await User.find({_id: teacherId, role: 'teacher'}).select('group_ids');
+                const groups2 = await Group.aggregate([
+                    {
+                        $match: {
+                            _id: { $in: choosenGroupIds[0].group_ids }, // Faqat belgilangan ID dagi guruhlar
+                        },
+                    },
+                    {
+                        $lookup: {
+                            from: 'users', // User kolleksiyasi nomi
+                            localField: '_id', // Group modeli `_id` maydoni
+                            foreignField: 'group_ids', // User modeli `group_ids` maydoni
+                            as: 'students', // Ulangan foydalanuvchilar saqlanadi
+                        },
+                    },
+                    {
+                        $unwind: {
+                            path: '$students',
+                            preserveNullAndEmptyArrays: true, // Student bo'lmasa ham guruhni saqlash
+                        },
+                    },
+                    {
+                        $group: {
+                            _id: '$_id',
+                            name: { $first: '$name' },
+                            studentCount: {
+                                $sum: {
+                                    $cond: [
+                                        { $and: ['$students', { $eq: ['$students.role', 'student'] }] },
+                                        1,
+                                        0,
+                                    ],
+                                },
+                            },
+                        },
+                    },
+                    {
+                        $project: {
+                            _id: 1,
+                            name: 1,
+                            studentCount: 1,
+                        },
+                    },
+                ]);
                 res.status(200).send(groups2);
             }
         }
