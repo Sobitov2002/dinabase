@@ -10,8 +10,8 @@ const router = Router();
 // group_id, date bo'yicha olish
 router.post('/attendance/group', verifyAdminOrTeacher, async (req, res) => {
     const { group_id, date } = req.body;
-    const startOfDay = new Date(date);
-    const endOfDay = new Date(new Date(date).setUTCHours(23, 59, 59, 999));
+    // const startOfDay = new Date(date);
+    // const endOfDay = new Date(new Date(date).setUTCHours(23, 59, 59, 999));
 
     try {
         const students = await User.find({ role: 'student', group_ids: { $in: [group_id] } }); 
@@ -21,7 +21,7 @@ router.post('/attendance/group', verifyAdminOrTeacher, async (req, res) => {
             
             // Tanlangan sanada mavjud yozuvni qidirish
             let attendance = await Attendance.findOne({ 
-                date: { $gte: startOfDay, $lte: endOfDay },
+                date: date,
                 group_id: group_id 
             });
 
