@@ -45,7 +45,7 @@ router.post('/attendance/group', verifyAdminOrTeacher, async (req, res) => {
             };
         }));
 
-        res.status(200).json(myDateObject);
+        res.status(200).json(attendanceRecords);
     } catch (error) {
         res.status(500).json({ error: 'Davomat ma\'lumotlarini olishda xatolik yuz berdi.' });
     }
