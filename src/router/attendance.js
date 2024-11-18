@@ -94,6 +94,8 @@ router.post('/attendance/create', async (req, res) => {
                     ...record
                 }
                 newData.is_active = true;
+                today = new Date();
+                newData.date = today.slice(0, 10);
                 
                 const attendance = new Attendance(newData);
                 await attendance.save();
