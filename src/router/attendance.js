@@ -18,7 +18,7 @@ router.post('/attendance/group', verifyAdminOrTeacher, async (req, res) => {
             console.log(student);
             
             // Tanlangan sanada mavjud yozuvni qidirish
-            let attendance = await Attendance.findOne({ date: date, student_id: student._id });
+            let attendance = await Attendance.findOne({ date: date, group_id: group_id });
 
             if (!attendance) {
                 attendance = { 
