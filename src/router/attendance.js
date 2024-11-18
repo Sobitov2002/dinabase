@@ -10,8 +10,9 @@ const router = Router();
 // group_id, date bo'yicha olish
 router.post('/attendance/group', verifyAdminOrTeacher, async (req, res) => {
     const { group_id, date } = req.body;
-    // const startOfDay = new Date(date);
-    // const endOfDay = new Date(new Date(date).setUTCHours(23, 59, 59, 999));
+    const myDateObject = date + "T00:00:00.000Z";
+    // const startOfDay = new Date(myDateObject.setUTCHours(0, 0, 0, 0));
+    // const endOfDay = new Date(myDateObject.setUTCHours(23, 59, 59, 999));
 
     try {
         const students = await User.find({ role: 'student', group_ids: { $in: [group_id] } }); 
@@ -21,7 +22,7 @@ router.post('/attendance/group', verifyAdminOrTeacher, async (req, res) => {
             
             // Tanlangan sanada mavjud yozuvni qidirish
             let attendance = await Attendance.findOne({ 
-                date: date,
+                date: myDateObject,
                 group_id: group_id 
             });
 
@@ -44,7 +45,7 @@ router.post('/attendance/group', verifyAdminOrTeacher, async (req, res) => {
             };
         }));
 
-        res.status(200).json(attendanceRecords);
+        res.status(200).json(myDateObject);
     } catch (error) {
         res.status(500).json({ error: 'Davomat ma\'lumotlarini olishda xatolik yuz berdi.' });
     }
