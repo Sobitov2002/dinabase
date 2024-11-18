@@ -10,7 +10,6 @@ const router = Router();
 // group_id, date bo'yicha olish
 router.post('/attendance/group', verifyAdminOrTeacher, async (req, res) => {
     const { group_id, date } = req.body;
-    const selectedDate = new Date(date).toString().split('T')[0];
 
     try {
         const students = await User.find({ role: 'student', group_ids: { $in: [group_id] } }); 
@@ -19,10 +18,7 @@ router.post('/attendance/group', verifyAdminOrTeacher, async (req, res) => {
             console.log(student);
             
             // Tanlangan sanada mavjud yozuvni qidirish
-            let attendance = await Attendance.findOne({ 
-                student_id: student._id,
-                group_id: group_id
-            });
+            let attendance = await Attendance.findOne({ date: date, student_id: student._id });
 
             if (!attendance) {
                 attendance = { 
@@ -50,7 +46,7 @@ router.post('/attendance/group', verifyAdminOrTeacher, async (req, res) => {
 });
 
 // barchasi
-router.get('/attendance', verifyAdminOrTeacher, async (req, res) => {
+router.get('/attendance', async (req, res) => {
     try {
         const data = await Attendance.find();
         res.status(200).send(data);
@@ -82,7 +78,7 @@ router.post('/attendance/update', async (req, res) => {
 router.post('/attendance/create', async (req, res) => {
     const attendanceRecords = req.body;
     try {
-        if(attendanceRecords[0].is_active){
+        if(attendanceRecords[0].is_active) {
             for(const record of attendanceRecords){
                 await Attendance.updateOne(
                     { student_id: record.student_id, group_id: record.group_id },
@@ -97,7 +93,7 @@ router.post('/attendance/create', async (req, res) => {
                     _id: newId,
                     ...record
                 }
-                console.log(newData);
+                newData.is_active = true;
                 
                 const attendance = new Attendance(newData);
                 await attendance.save();
@@ -113,7 +109,7 @@ router.post('/attendance/create', async (req, res) => {
 // delete all
 router.delete('/attendance/delete', async (req, res) => {
     try {
-        // const data = await Attendance.deleteMany();
+        const data = await Attendance.deleteMany();
         res.status(200).send(data);
     } catch (error) {
         res.status(500).send("malumot o'chmadi")
