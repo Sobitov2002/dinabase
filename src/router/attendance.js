@@ -97,12 +97,14 @@ router.post('/attendance/create', async (req, res) => {
                 today = new Date();
                 newData.date = today.slice(0, 10);
                 
-                const attendance = new Attendance(newData);
-                await attendance.save();
+                // const attendance = new Attendance(newData);
+                // await attendance.save();
+
+                res.status(200).send(newData);
             }
         }
 
-        res.status(200).send({message: "Davomat muvaffaqqiyatli saqlandi"});
+        // res.status(200).send({message: "Davomat muvaffaqqiyatli saqlandi"});
     } catch (error) {
         res.status(500).send({message: "Davomat olishda hatolik yuz berdi"});
     }
