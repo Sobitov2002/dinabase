@@ -5,7 +5,7 @@ dotenv.config();
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
-export function verifyAdminOrTeacher(req, res, next) {
+export function verifyToken(req, res, next) {
     const token = (req.headers['authorization'] || '').split(' ')[1];
     if (!token) {
         return res.status(401).send({ message: 'Unauthorized' });
@@ -15,10 +15,6 @@ export function verifyAdminOrTeacher(req, res, next) {
         if (err) {
             return res.status(401).send({ message: 'Unauthorized' });
         }
-        if (decoded.role === 'student') {
-            next(); 
-        } else {
-            return res.status(403).send({ message: 'Forbidden' });
-        }
+        next(); 
     });
 }

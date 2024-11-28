@@ -7,6 +7,7 @@ import payment from './payment.js'
 import attendance from './attendance.js'
 import book from './book.js';
 import admin from './admin.js';
+import profile from "./profile.js"
 
 
 const router = Router()
@@ -19,5 +20,6 @@ router.use(payment)
 router.use(attendance)
 router.use(book);
 router.use(admin);
+router.use(profile);
 
 export default router;
