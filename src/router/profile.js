@@ -6,7 +6,7 @@ import { Group } from "../mongoose/schemas/group.js";
 
 const router = Router();
 
-router.post('/profile/:id', verifyToken, async (req, res) => {
+router.get('/profile/:id', verifyToken, async (req, res) => {
     const id = req.params.id;
 
     const user = await User.findOne({_id: id});
