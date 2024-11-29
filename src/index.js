@@ -23,6 +23,11 @@ mongoose
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:5173', // frontend domeningizni belgilang
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // kerakli HTTP metodlarini ruxsat eting
+    credentials: true, // agar cookie bilan ishlayotgan bo'lsangiz
+  }));
 app.use(router);
 
 
