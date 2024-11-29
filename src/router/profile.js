@@ -13,13 +13,16 @@ router.post('/profile/:id', verifyToken, async (req, res) => {
     if(!user) return res.status(404).send({message: "Bunday foydalanuvchi topilmadi"});
     const groupName = await Group.findOne({ _id: user.group_ids[0] });
 
-    const userData = {
+    const data = {
         first_name: user.first_name,
         last_name: user.last_name,
         login: user.login,
         phone: user.phone,
         telegram_id: user.telegram_id,
-        group_name: groupName.name,
+        group_name: groupName.name
+    }
+    const userData = {
+        data: data,
         attendance: []
     }
     const attendanceRecords = await Attendance.find({ student_id: id });
