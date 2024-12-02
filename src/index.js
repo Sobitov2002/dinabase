@@ -29,13 +29,7 @@ app.use(cors({
     credentials: true, // agar cookie bilan ishlayotgan bo'lsangiz
 }));
 
-app.options('*', (req, res) => {
-    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:5173');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-    res.sendStatus(200);
-});
+
 app.use(router);
 
 
