@@ -3,17 +3,60 @@ import { checkSchema, validationResult, matchedData } from "express-validator";
 import { paymentValidation } from "../utils/validation.js";
 import { verifyAdminOrTeacher } from "../utils/verifyAdminOrTeacher.js";
 import { Payment } from "../mongoose/schemas/payment.js";
+import { User } from "../mongoose/schemas/user.js";
 import { generateSequence } from "../utils/sequenceGenerator.js";
 
 const router = Router();
 
-router.post('/payment', async (req, res) => {
-    const groupId = 1;
-})
+// group_id, oy bo'yicha olish
+router.post('/payment/group', verifyAdminOrTeacher, async (req, res) => {
+    const { group_id, month } = req.body;
+    // const mymonthObject = month + "T00:00:00.000Z";
+
+    try {
+        const students = await User.find({ role: 'student', group_ids: { $in: [group_id] } }); 
+        if(students == '') {
+            return res.status(404).json({ error: 'Guruh mavjud emas' });
+        }
+
+        const paymentRecords = await Promise.all(students.map(async (student) => {
+            console.log(student);
+            
+            // Tanlangan sanada mavjud yozuvni qidirish
+            let payment = await Payment.findOne({ 
+                month: month,
+                group_id: group_id ,
+                student_id: student._id
+            });
+
+            if (!payment) {
+                payment = { 
+                    status: false, 
+                    amount: 0,
+                    month: month,
+                    payment_type: "Nomalum",
+                    student_id: student._id, 
+                    group_id: group_id,
+                };
+            }
+
+            return {
+                student_id: student._id,
+                first_name: student.first_name,
+                last_name: student.last_name,
+                payment
+            };
+        }));
+
+        res.status(200).json(paymentRecords);
+    } catch (error) {
+        res.status(500).json({ error: 'To\'lov ma\'lumotlarini olishda xatolik yuz berdi.' });
+    }
+});
 
 
 
-router.post('/payment/create', checkSchema(paymentValidation), async (req, res) => {
+router.post('/payment/create', verifyAdminOrTeacher, checkSchema(paymentValidation), async (req, res) => {
     try {
         const err = validationResult(req);
         if (!err.isEmpty()) {
@@ -28,10 +71,30 @@ router.post('/payment/create', checkSchema(paymentValidation), async (req, res) 
         
         const payment = new Payment(newData);
         await payment.save();
-        res.send(payment);
+        res.status(200).send({"message": "To'lov amalga oshirildi"});
     } catch (error) {
         res.status(500).send(error);
     }
 })
 
+// delete all
+// router.delete('/payment/delete', async (req, res) => {
+//     try {
+//         const data = await Payment.deleteMany();
+//         res.status(200).send({message: "To'lovlar muvaffaqqiyatli o'chirildi"});
+//     } catch (error) {
+//         res.status(500).send("malumot o'chmadi")
+                
+//     }
+// })
+
 export default router
+
+const db = {
+    status: true,
+    amount: 250000,
+    month: "11.2024",
+    payment_type: "Payme",
+    student_id: 5,
+    group_id: 1
+}

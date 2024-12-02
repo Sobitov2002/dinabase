@@ -11,11 +11,12 @@ const router = Router();
 router.post('/attendance/group', verifyAdminOrTeacher, async (req, res) => {
     const { group_id, date } = req.body;
     const myDateObject = date + "T00:00:00.000Z";
-    // const startOfDay = new Date(myDateObject.setUTCHours(0, 0, 0, 0));
-    // const endOfDay = new Date(myDateObject.setUTCHours(23, 59, 59, 999));
 
     try {
         const students = await User.find({ role: 'student', group_ids: { $in: [group_id] } }); 
+        if(students == '') {
+            return res.status(404).json({ error: 'Guruh mavjud emas' });
+        }
 
         const attendanceRecords = await Promise.all(students.map(async (student) => {
             console.log(student);
@@ -52,37 +53,10 @@ router.post('/attendance/group', verifyAdminOrTeacher, async (req, res) => {
     }
 });
 
-// barchasi
-router.get('/attendance', async (req, res) => {
-    try {
-        const data = await Attendance.find();
-        res.status(200).send(data);
-    } catch (error) {
-        res.status(500).send(error);
-    }
-})
 
-// update
-router.post('/attendance/update', async (req, res) => {
-    const attendanceRecords = req.body;
-    
-    try {
-        for(const record of attendanceRecords){
-            await Attendance.updateOne(
-                { student_id: record.student_id, role: record.role },
-                { $set: { status: record.status }},
-                { upset: true }
-            )
-        }
-
-        res.status(200).send({message: "Davomat muvaffaqqiyatli saqlandi"});
-    } catch (error) {
-        res.status(500).send("Davomat olishda hatolik yuz berdi");
-    }
-})
 
 // create
-router.post('/attendance/create', async (req, res) => {
+router.post('/attendance/create', verifyAdminOrTeacher, async (req, res) => {
     const attendanceRecords = req.body;
     try {
         if(attendanceRecords[0].is_active) {
@@ -115,14 +89,33 @@ router.post('/attendance/create', async (req, res) => {
     }
 })
 
-// delete all
-router.delete('/attendance/delete', async (req, res) => {
+
+// barchasi
+router.get('/attendance', verifyAdminOrTeacher, async (req, res) => {
     try {
-        const data = await Attendance.deleteMany();
+        const data = await Attendance.find();
         res.status(200).send(data);
     } catch (error) {
-        res.status(500).send("malumot o'chmadi")
-                
+        res.status(500).send(error);
+    }
+})
+
+// update
+router.post('/attendance/update', verifyAdminOrTeacher, async (req, res) => {
+    const attendanceRecords = req.body;
+    
+    try {
+        for(const record of attendanceRecords){
+            await Attendance.updateOne(
+                { student_id: record.student_id, role: record.role },
+                { $set: { status: record.status }},
+                { upset: true }
+            )
+        }
+
+        res.status(200).send({message: "Davomat muvaffaqqiyatli saqlandi"});
+    } catch (error) {
+        res.status(500).send("Davomat olishda hatolik yuz berdi");
     }
 })
 
