@@ -11,6 +11,8 @@ router.post('/payment', async (req, res) => {
     const groupId = 1;
 })
 
+
+
 router.post('/payment/create', checkSchema(paymentValidation), async (req, res) => {
     try {
         const err = validationResult(req);
