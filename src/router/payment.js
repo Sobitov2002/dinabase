@@ -9,7 +9,7 @@ import { generateSequence } from "../utils/sequenceGenerator.js";
 const router = Router();
 
 // group_id, oy bo'yicha olish
-router.post('/payment/group', verifyAdminOrTeacher, async (req, res) => {
+router.post('/payment/group', verifyAdminOrTeacher,  async (req, res) => {
     const { group_id, month } = req.body;
     // const mymonthObject = month + "T00:00:00.000Z";
 
@@ -20,11 +20,9 @@ router.post('/payment/group', verifyAdminOrTeacher, async (req, res) => {
         }
 
         const paymentRecords = await Promise.all(students.map(async (student) => {
-            console.log(student);
-            
             // Tanlangan sanada mavjud yozuvni qidirish
             let payment = await Payment.findOne({ 
-                month: month,
+                month: { $gte: new Date(month + "-01"), $lt: new Date(month + "-01").setMonth(new Date(month + "-01").getMonth() + 1) },
                 group_id: group_id ,
                 student_id: student._id
             });
@@ -56,7 +54,7 @@ router.post('/payment/group', verifyAdminOrTeacher, async (req, res) => {
 
 
 
-router.post('/payment/create', verifyAdminOrTeacher, checkSchema(paymentValidation), async (req, res) => {
+router.post('/payment/create', verifyAdminOrTeacher,  checkSchema(paymentValidation), async (req, res) => {
     try {
         const err = validationResult(req);
         if (!err.isEmpty()) {
