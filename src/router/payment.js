@@ -9,10 +9,8 @@ import { generateSequence } from "../utils/sequenceGenerator.js";
 const router = Router();
 
 // group_id, oy bo'yicha olish
-router.post('/payment/group', verifyAdminOrTeacher,  async (req, res) => {
+router.post('/payment/group',  async (req, res) => {
     const { group_id, month } = req.body;
-    // const mymonthObject = month + "T00:00:00.000Z";
-
     try {
         const students = await User.find({ role: 'student', group_ids: { $in: [group_id] } }); 
         if(students == '') {
@@ -27,6 +25,8 @@ router.post('/payment/group', verifyAdminOrTeacher,  async (req, res) => {
                 student_id: student._id
             });
 
+            
+
             if (!payment) {
                 payment = { 
                     status: false, 
@@ -34,7 +34,7 @@ router.post('/payment/group', verifyAdminOrTeacher,  async (req, res) => {
                     month: month,
                     payment_type: "Nomalum",
                     student_id: student._id, 
-                    group_id: group_id,
+                    group_id: parseInt(group_id)
                 };
             }
 
@@ -54,13 +54,16 @@ router.post('/payment/group', verifyAdminOrTeacher,  async (req, res) => {
 
 
 
-router.post('/payment/create', verifyAdminOrTeacher,  checkSchema(paymentValidation), async (req, res) => {
+router.post('/payment/create',   checkSchema(paymentValidation), async (req, res) => {
     try {
         const err = validationResult(req);
         if (!err.isEmpty()) {
             return res.status(422).send(err);
         }
         const { body } = req;
+        const ispayed = await Payment.findOne({student_id: body.student_id, month: body.month + "-01T00:00:00.000Z"});
+        if(ispayed) return res.status(400).send({message: "To'lov mavjud"});
+
         const newId = await generateSequence('payment');
         const newData = {
             _id: newId,
