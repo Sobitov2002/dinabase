@@ -54,7 +54,7 @@ router.post('/payment/group',  async (req, res) => {
 
 
 
-router.post('/payment/create',   checkSchema(paymentValidation), async (req, res) => {
+router.post('/payment/create', verifyAdminOrTeacher,  checkSchema(paymentValidation), async (req, res) => {
     try {
         const err = validationResult(req);
         if (!err.isEmpty()) {
