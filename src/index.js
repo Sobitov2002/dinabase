@@ -20,9 +20,13 @@ mongoose
     .then(() => console.log('MongoDB connected'))
     .catch(err =>  console.log(err))
 
+app.use(cors({
+    origin: 'http://localhost:5173', // Frontend manzilingizni qo'shing
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Ruxsat etilgan metodlar
+    credentials: true // Agar kerak bo'lsa
+}));
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
-app.use(cors());
 
 
 
