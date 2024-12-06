@@ -1,28 +1,31 @@
 import ImageKit from "imagekit";
+import multer from "multer";
 import { Router } from "express";
 import { verifyAdminOrTeacher } from "../utils/verifyAdminOrTeacher.js";
 const router = Router()
 
-const imagekit = new ImageKit({
-  publicKey: "public_xyn9SKy/R0uODN6qsmni/yvenv4=", // O'z publicKey'ingizni kiriting
-  privateKey: "private_1M+YLEWx7XOcLnDCc47dupEHwTQ=", // O'z privateKey'ingizni kiriting
-  urlEndpoint: "https://ik.imagekit.io/njtthrpue", // URL endpoint
+const upload = multer({
+    storage: multer.memoryStorage(), // Faylni xotirada saqlash
 });
 
-router.get("/imagekit-auth", verifyAdminOrTeacher, async (req, res) => {
+const imagekit = new ImageKit({
+  publicKey: "public_xyn9SKy/R0uODN6qsmni/yvenv4=",
+  privateKey: "private_1M+YLEWx7XOcLnDCc47dupEHwTQ=",
+  urlEndpoint: "https://ik.imagekit.io/njtthrpue",
+});
+
+router.get("/imagekit-auth", verifyAdminOrTeacher,  async (req, res) => {
   const authenticationParameters = await imagekit.getAuthenticationParameters();
   res.json(authenticationParameters);
 });
 
-
-
-router.post("/upload", verifyAdminOrTeacher, async (req, res) => {
-    const { file, fileName } = req.body; // Frontend'dan fayl ma'lumotlarini olish
+router.post("/upload", verifyAdminOrTeacher, upload.single("file"), async (req, res) => {
+    const { file, fileName } = req.body;
   
     await imagekit
       .upload({
-        file, // Fayl ma'lumotlari (Base64, URL yoki fayl obyekti)
-        fileName
+        file: file.buffer,   
+        fileName: fileName
       })
       .then((response) => {
         res.json(response);
@@ -32,5 +35,4 @@ router.post("/upload", verifyAdminOrTeacher, async (req, res) => {
         res.status(500).json({ error: "Rasm yuklashda xato yuz berdi." });
       });
 });
-
 export default router

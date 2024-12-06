@@ -6,3 +6,11 @@ username=muhammadali0210
 imagekit url = https://ik.imagekit.io/njtthrpue/
 
 https://ik.imagekit.io/njtthrpue/rest/of/the/path/image.jpg?tr=w-300,h-300
+
+
+
+const imagekit = new ImageKit({
+  publicKey: "public_xyn9SKy/R0uODN6qsmni/yvenv4=",
+  privateKey: "private_1M+YLEWx7XOcLnDCc47dupEHwTQ=",
+  urlEndpoint: "https://ik.imagekit.io/njtthrpue",
+});
