@@ -1,4 +1,4 @@
-import ImageKit from "imagekit.io";
+import ImageKit from "imagekit";
 
 const imagekit = new ImageKit({
   publicKey: "public_xyn9SKy/R0uODN6qsmni/yvenv4=", // O'z publicKey'ingizni kiriting
