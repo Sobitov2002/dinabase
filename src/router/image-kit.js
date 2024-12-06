@@ -32,7 +32,7 @@ router.post("/upload", verifyAdminOrTeacher, upload.single("file"), async (req, 
       })
       .catch((error) => {
         console.error("Rasm yuklashda xato:", error);
-        res.status(500).json({ error: "Rasm yuklashda xato yuz berdi." });
+        res.status(500).send(error)
       });
 });
 export default router
