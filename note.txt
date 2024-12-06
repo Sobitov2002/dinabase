@@ -2,3 +2,7 @@ mongo DB ni terminal orqali start berish "sudo systemctl start mongod"
 qayta ishlatish uchun "sudo systemctl daemon-reload"
 password=nQmAJ9J9fzArxyRB
 username=muhammadali0210
+
+imagekit url = https://ik.imagekit.io/njtthrpue/
+
+https://ik.imagekit.io/njtthrpue/rest/of/the/path/image.jpg?tr=w-300,h-300
