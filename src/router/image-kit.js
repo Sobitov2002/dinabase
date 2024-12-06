@@ -24,7 +24,7 @@ router.post("/upload", verifyAdminOrTeacher, upload.single("file"), async (req, 
   
     await imagekit
       .upload({
-        file: file.buffer,   
+        file: file,   
         fileName: fileName
       })
       .then((response) => {
