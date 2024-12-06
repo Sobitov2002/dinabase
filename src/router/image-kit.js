@@ -22,8 +22,7 @@ router.post("/upload", verifyAdminOrTeacher, async (req, res) => {
     await imagekit
       .upload({
         file, // Fayl ma'lumotlari (Base64, URL yoki fayl obyekti)
-        fileName, // Fayl nomi
-        folder: "/uploads", // Ixtiyoriy: Faylni qaysi papkaga yuklash
+        fileName
       })
       .then((response) => {
         res.json(response);
