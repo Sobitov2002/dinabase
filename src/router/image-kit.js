@@ -1,11 +1,13 @@
 import ImageKit from "imagekit";
-import multer from "multer";
 import { Router } from "express";
+import multer from "multer"; // Multerni qo‘shamiz
 import { verifyAdminOrTeacher } from "../utils/verifyAdminOrTeacher.js";
-const router = Router()
 
+const router = Router();
+
+// Multer sozlamalari
 const upload = multer({
-    storage: multer.memoryStorage(), // Faylni xotirada saqlash
+  storage: multer.memoryStorage(), // Faylni xotirada saqlash
 });
 
 const imagekit = new ImageKit({
@@ -14,25 +16,37 @@ const imagekit = new ImageKit({
   urlEndpoint: "https://ik.imagekit.io/njtthrpue",
 });
 
-router.get("/imagekit-auth", verifyAdminOrTeacher,  async (req, res) => {
+router.get("/imagekit-auth", verifyAdminOrTeacher, async (req, res) => {
   const authenticationParameters = await imagekit.getAuthenticationParameters();
   res.json(authenticationParameters);
 });
 
-router.post("/upload", verifyAdminOrTeacher, upload.single("file"), async (req, res) => {
-    const { file, fileName } = req.body;
-  
-    await imagekit
-      .upload({
-        file: file,   
-        fileName: fileName
-      })
-      .then((response) => {
-        res.json(response);
-      })
-      .catch((error) => {
-        console.error("Rasm yuklashda xato:", error);
-        res.status(500).send(error)
+// Fayl yuklash uchun POST endpoint
+router.post(
+  "/upload",
+  upload.single("file"), // Multer bilan faylni olish
+  async (req, res) => {
+    try {
+      // Multerdan olingan fayl
+      const file = req.file;
+
+      if (!file) {
+        return res.status(400).json({ error: "Fayl taqdim etilmagan." });
+      }
+
+      // Faylni ImageKit API'ga yuklash
+      const response = await imagekit.upload({
+        file: file.buffer, // Faylni buffer formatida yuborish
+        fileName: file.originalname, // Fayl nomi
+        transformation: [{ width: 360, height: 200, quality: 80 }],
       });
-});
-export default router
+
+      res.json({ url: response.url }); // Javobni qaytarish
+    } catch (error) {
+      console.error("Rasm yuklashda xato:", error);
+      res.status(500).json({ error: "Rasm yuklashda xato yuz berdi." });
+    }
+  }
+);
+
+export default router;
