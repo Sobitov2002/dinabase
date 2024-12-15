@@ -23,7 +23,7 @@ router.get("/imagekit-auth", verifyAdminOrTeacher, async (req, res) => {
 
 // Fayl yuklash uchun POST endpoint
 router.post(
-  "/upload",
+  "/upload/videoimg",
   upload.single("file"), // Multer bilan faylni olish
   async (req, res) => {
     try {
@@ -36,17 +36,57 @@ router.post(
 
       // Faylni ImageKit API'ga yuklash
       const response = await imagekit.upload({
-        file: file.buffer, // Faylni buffer formatida yuborish
-        fileName: file.originalname, // Fayl nomi
-        transformation: [{ width: 360, height: 200, quality: 80 }],
+        file: file.buffer,
+        fileName: file.originalname
       });
 
-      res.json({ url: response.url }); // Javobni qaytarish
+      const transformedUrl = imagekit.url({
+        path: response.filePath,
+        transformation: [
+            { width: 600, height: 360, quality: 90, format: "webp", progressive: true },
+        ],
+      });
+      console.log(transformedUrl);
+      
+
+      res.json({url: transformedUrl}); // Javobni qaytarish
     } catch (error) {
       console.error("Rasm yuklashda xato:", error);
       res.status(500).json({ error: "Rasm yuklashda xato yuz berdi." });
     }
   }
 );
+
+
+router.post(
+    "/upload/profileimg",
+    upload.single("file"),
+    async (req, res) => {
+        try {
+        const file = req.file;
+        if (!file) {
+            return res.status(400).json({ error: "Fayl taqdim etilmagan." });
+        }
+
+        const response = await imagekit.upload({
+            file: file.buffer,
+            fileName: file.originalname
+        });
+
+        const transformedUrl = imagekit.url({
+            path: response.filePath,
+            transformation: [
+                { width: 300, height: 300, quality: 80, format: "webp", progressive: true },
+            ],
+        });
+
+        res.status(200).send({ url: transformedUrl });
+        } catch (error) {
+        console.error("Rasm yuklashda xato:", error);
+        res.status(500).json({ error: "Rasm yuklashda xato yuz berdi." });
+        }
+    }
+);
+
 
 export default router;

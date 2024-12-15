@@ -9,7 +9,7 @@ import book from './book.js';
 import admin from './admin.js';
 import profile from "./profile.js"
 import imagekit from './image-kit.js'
-
+import course from './course.js';
 
 const router = Router()
 
@@ -23,5 +23,7 @@ router.use(book);
 router.use(admin);
 router.use(profile);
 router.use(imagekit);
+router.use(course);
+
 
 export default router;

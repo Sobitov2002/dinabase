@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { Schema } from "mongoose";
 
 const CourseSchema = new Schema(
@@ -5,10 +6,11 @@ const CourseSchema = new Schema(
         _id: Number,
         title: String,
         description: String,
+        learning: String,
         requirements: String,
         level: String,
-        category: String,
         language: String,
+        category: String,
         oldPrice: Number,
         currentPrice: Number,
         previewImage: String,
@@ -16,5 +18,4 @@ const CourseSchema = new Schema(
     },
     { timestamps: true }
 )
-const Course = module.Course || model('Course', CourseSchema)
-export default Course
+export const Course = mongoose.model('Course', CourseSchema)    
