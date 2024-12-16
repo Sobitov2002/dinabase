@@ -14,7 +14,7 @@ router.get('/course', verifyAdminOrTeacher, async (req, res) => {
     }
 })
 
-router.post('/course/create',  async (req, res) => {
+router.post('/course/create', verifyAdminOrTeacher,  async (req, res) => {
     try {
         const newData = {
             _id: await generateSequence('course'),
