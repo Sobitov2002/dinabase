@@ -2,7 +2,7 @@ import { Router } from "express";
 import { Course } from "../mongoose/schemas/course.js";
 import { checkSchema, validationResult, matchedData } from "express-validator";
 import { verifyAdminOrTeacher } from "../utils/verifyAdminOrTeacher.js";
-import generateSequence from "../utils/sequenceGenerator.js";
+import { generateSequence } from "../utils/sequenceGenerator.js";
 const router = Router();
 
 router.get('/course', verifyAdminOrTeacher, async (req, res) => {
