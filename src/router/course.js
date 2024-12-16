@@ -14,19 +14,19 @@ router.get('/course', verifyAdminOrTeacher, async (req, res) => {
     }
 })
 
-router.post('/course/create', verifyAdminOrTeacher, async (req, res) => {
+router.post('/course/create',  async (req, res) => {
     try {
-        const data = matchedData(req);
-
-        data = {
+        const newData = {
             _id: await generateSequence('course'),
-            ...data
+            ...req.body
         }
 
-        const courseData = req.body;
-        const newCourse = await Course.create(courseData); 
-        res.status(201).send({message: "Kurs muvaffaqqiyatli yaratildi", course: newCourse});
+        const course = new Course(newData); 
+        const newCourse = await course.save();
+        res.status(201).send({message: "Kurs muvaffaqqiyatli yaratildi" });
     } catch (error) {
+        console.log(error);
+        
         res.status(500).send({message: "Kurs yaratishda hatolik yuz berdi"});
     }
 })

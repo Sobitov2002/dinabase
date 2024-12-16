@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
-import { Schema } from "mongoose";
 
-const CourseSchema = new Schema(
+const CourseSchema = new mongoose.Schema(
     {
         _id: Number,
         title: String,
@@ -15,7 +14,6 @@ const CourseSchema = new Schema(
         currentPrice: Number,
         previewImage: String,
         published: {type: Boolean, default: false}
-    },
-    { timestamps: true }
+    }
 )
-export const Course = mongoose.model('Course', CourseSchema)    
+export const Course = mongoose.model('Course', CourseSchema)  
