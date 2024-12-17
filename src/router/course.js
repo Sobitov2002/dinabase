@@ -14,6 +14,15 @@ router.get('/course', verifyAdminOrTeacher, async (req, res) => {
     }
 })
 
+router.get('/course/:id', async (req, res) => {
+    try {
+        const data = await Course.findById(req.params.id); 
+        res.status(200).send(data);
+    } catch (error) {
+        res.status(500).send(error);
+    }
+})
+
 router.post('/course/create', verifyAdminOrTeacher,  async (req, res) => {
     try {
         const newData = {
