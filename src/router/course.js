@@ -19,7 +19,7 @@ router.get('/course/:id', async (req, res) => {
         const data = await Course.findById(req.params.id); 
         res.status(200).send(data);
     } catch (error) {
-        res.status(500).send(error);
+        res.status(500).send({message: "Kursni topishda hatolik yuz berdi"});
     }
 })
 
@@ -48,6 +48,34 @@ router.put('/course/:id', verifyAdminOrTeacher, async (req, res) => {
         res.status(500).send({message: "Kursni o'zgartirishda hatolik yuz berdi"});
     }
 })
+
+router.patch('/course/:id', async (req, res) => {
+    try {
+      const { id } = req.params;
+      const updates = req.body;
+  
+      const allowedUpdates = ['title', 'description', 'learning', 'requirements', 'level', 'language', 'category', 'oldPrice', 'currentPrice', 'previewImage', 'published'];
+      const updateKeys = Object.keys(updates);
+      const isValidOperation = updateKeys.every((key) => allowedUpdates.includes(key));
+  
+      if (!isValidOperation) {
+        return res.status(400).send({ message: 'Invalid updates!' });
+      }
+  
+      const updatedCourse = await Course.findByIdAndUpdate(id, updates, {
+        new: true, 
+        runValidators: true, 
+      });
+  
+      if (!updatedCourse) {
+        return res.status(404).send({ message: 'Course not found!' });
+      }
+  
+      res.status(200).send(updatedCourse);
+    } catch (error) {
+      res.status(500).send({ message: 'Server error', error });
+    }
+});
 
 router.delete('/course/:id', verifyAdminOrTeacher, async (req, res) => {
     try {
