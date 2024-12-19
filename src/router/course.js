@@ -49,7 +49,7 @@ router.put('/course/:id', verifyAdminOrTeacher, async (req, res) => {
     }
 })
 
-router.patch('/course/:id', async (req, res) => {
+router.patch('/course/:id', verifyAdminOrTeacher, async (req, res) => {
     try {
       const { id } = req.params;
       const updates = req.body;
@@ -59,7 +59,7 @@ router.patch('/course/:id', async (req, res) => {
       const isValidOperation = updateKeys.every((key) => allowedUpdates.includes(key));
   
       if (!isValidOperation) {
-        return res.status(400).send({ message: 'Invalid updates!' });
+        return res.status(400).send({ message: 'Invalid update operation' });
       }
   
       const updatedCourse = await Course.findByIdAndUpdate(id, updates, {
