@@ -20,10 +20,18 @@ mongoose
     .then(() => console.log('MongoDB connected'))
     .catch(err =>  console.log(err))
 
+const allowedDomains = ['http://localhost:5173', 'https://dinaeducation.netlify.app'];
+
 app.use(cors({
-    origin: 'http://localhost:5173', // Frontend manzilingizni qo'shing
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'], // Ruxsat etilgan metodlar
-    credentials: true // Agar kerak bo'lsa
+    origin: (origin, callback) => {
+        if (!origin || allowedDomains.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+    credentials: true
 }));
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
