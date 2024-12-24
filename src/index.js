@@ -22,6 +22,7 @@ mongoose
 
 const allowedDomains = ['http://localhost:5173', 'https://dinaeducation.netlify.app'];
 
+
 app.use(cors({
     origin: (origin, callback) => {
         if (!origin || allowedDomains.includes(origin)) {
