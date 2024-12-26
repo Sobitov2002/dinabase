@@ -7,7 +7,7 @@ import { Section } from "../mongoose/schemas/section.js";
 
 const router = Router();
 
-router.get('/section', verifyAdminOrTeacher, async (req, res) => {
+router.get('/section', verifyAdminOrTeacher,  async (req, res) => {
     try {
         const data = await Section.find(); 
         res.send(data);
@@ -16,15 +16,15 @@ router.get('/section', verifyAdminOrTeacher, async (req, res) => {
     }
 })
 
-router.post('/section', verifyAdminOrTeacher, async (req, res) => {
+router.post('/section', verifyAdminOrTeacher,  async (req, res) => {
     try {              
-        const data = matchedData(req);
+        // const data = matchedData(req);
         const sections = await Section.find();
         const newId = await generateSequence('section');
         const newData = {        
             _id: newId,
             position: sections.length + 1,
-            ...data
+            ...req.body
         }        
         const section = new Section(newData);
         await section.save();
