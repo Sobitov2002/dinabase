@@ -7,7 +7,7 @@ import { Section } from "../mongoose/schemas/section.js";
 
 const router = Router();
 
-router.get('/section/:id', verifyAdminOrTeacher,  async (req, res) => {
+router.get('/section/all/:id', verifyAdminOrTeacher,  async (req, res) => {
     try {
         const data = await Section.find({courseId: req.params.id});
         res.send(data);
