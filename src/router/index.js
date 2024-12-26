@@ -10,6 +10,7 @@ import admin from './admin.js';
 import profile from "./profile.js"
 import imagekit from './image-kit.js'
 import course from './course.js';
+import section from './section.js'
 
 const router = Router()
 
@@ -24,6 +25,7 @@ router.use(admin);
 router.use(profile);
 router.use(imagekit);
 router.use(course);
+router.use(section);
 
 
 export default router;
