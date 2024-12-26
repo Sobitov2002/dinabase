@@ -28,14 +28,14 @@ router.post('/section', verifyAdminOrTeacher, async (req, res) => {
         }        
         const section = new Section(newData);
         await section.save();
-        console.log(section);
-        res.send("Section created successfully");
+        const allSections = await Section.find();
+        res.send(allSections);
     } catch (error) {
         res.send(error);
     }
 })
 
-router.put('/group/:id', verifyAdminOrTeacher, checkSchema(groupValidation), async (req, res) => {
+router.put('/section/:id', verifyAdminOrTeacher, checkSchema(groupValidation), async (req, res) => {
     try {
         const err = validationResult(req);
         if (!err.isEmpty()) return res.status(422).send(err);
