@@ -16,6 +16,15 @@ router.get('/section', verifyAdminOrTeacher,  async (req, res) => {
     }
 })
 
+router.get('/section/:id', verifyAdminOrTeacher, async (req, res) => {
+    try {
+        const data = await Section.findById(req.params.id); 
+        res.status(200).send(data);
+    } catch (error) {
+        res.status(500).send({message: "Sectionni topishda hatolik yuz berdi"});
+    }
+})
+
 router.post('/section', verifyAdminOrTeacher,  async (req, res) => {
     try {              
         // const data = matchedData(req);
