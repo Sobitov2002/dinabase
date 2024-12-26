@@ -37,7 +37,7 @@ router.post('/section', verifyAdminOrTeacher,  async (req, res) => {
         }        
         const section = new Section(newData);
         await section.save();
-        const allSections = await Section.find();
+        const allSections = await Section.find({courseId: req.body.courseId});
         res.send(allSections);
     } catch (error) {
         res.send(error);
