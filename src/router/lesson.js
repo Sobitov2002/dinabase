@@ -79,6 +79,10 @@ router.put('/lesson/:id', verifyAdminOrTeacher, async (req, res) => {
 
 router.delete('/lesson/:id', verifyAdminOrTeacher, async (req, res) => {
     try {
+        const exsistSection = await Section.findById(req.body.sectionId);
+        if(!exsistSection) return res.status(400).send({message: "Bunday section mavjud emas"});
+        exsistSection.lessonId = exsistSection.lessonId.filter(item => item != req.params.id);
+        await exsistSection.save();
         await Lesson.findByIdAndDelete(req.params.id);
         const lessons = await Lesson.find({sectionId: req.body.sectionId});
         res.send(lessons);
