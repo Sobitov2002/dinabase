@@ -28,16 +28,19 @@ router.get('/section/:id', verifyAdminOrTeacher, async (req, res) => {
 
 router.post('/lesson', verifyAdminOrTeacher,  async (req, res) => {
     try {              
-        // const data = matchedData(req);
-        const lessons = await Lesson.find();
+        const exsistSection = await Section.findById(req.body.sectionId);
+        if(!exsistSection) return res.status(400).send({message: "Bunday section mavjud emas"});
+        const position = exsistSection.lessonId.length + 1 
         const newId = await generateSequence('lesson');
         const newData = {        
             _id: newId,
-            position: lessons.length + 1,
+            position: position,
             ...req.body
         }        
         const lesson = new Lesson(newData);
         await lesson.save();
+        exsistSection.lessonId.push(newId);
+        await exsistSection.save();
         const allLessons = await Lesson.find({sectionId: req.body.sectionId});
         res.send(allLessons);
     } catch (error) {
