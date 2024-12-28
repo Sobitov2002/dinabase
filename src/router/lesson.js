@@ -4,12 +4,13 @@ import { groupValidation } from "../utils/validation.js";
 import { generateSequence } from '../utils/sequenceGenerator.js';
 import { verifyAdminOrTeacher } from "../utils/verifyAdminOrTeacher.js";
 import { Section } from "../mongoose/schemas/section.js";
+import { Lesson } from "../mongoose/schemas/lesson.js";
 
 const router = Router();
 
-router.get('/section/all/:id', verifyAdminOrTeacher,  async (req, res) => {
+router.get('/lesson-all/:id', verifyAdminOrTeacher,  async (req, res) => {
     try {
-        const data = await Section.find({courseId: req.params.id});
+        const data = await Lesson.find({sectionId: req.params.id});
         res.send(data);
     } catch (error) {
         res.send(error);
@@ -25,39 +26,39 @@ router.get('/section/:id', verifyAdminOrTeacher, async (req, res) => {
     }
 })
 
-router.post('/section', verifyAdminOrTeacher,  async (req, res) => {
+router.post('/lesson', verifyAdminOrTeacher,  async (req, res) => {
     try {              
         // const data = matchedData(req);
-        const sections = await Section.find();
-        const newId = await generateSequence('section');
+        const lessons = await Lesson.find();
+        const newId = await generateSequence('lesson');
         const newData = {        
             _id: newId,
-            position: sections.length + 1,
+            position: lessons.length + 1,
             ...req.body
         }        
-        const section = new Section(newData);
-        await section.save();
-        const allSections = await Section.find({courseId: req.body.courseId});
-        res.send(allSections);
+        const lesson = new Lesson(newData);
+        await lesson.save();
+        const allLessons = await Lesson.find({sectionId: req.body.sectionId});
+        res.send(allLessons);
     } catch (error) {
         res.send(error);
     }
 })
 
-router.put('/section-title/:id', verifyAdminOrTeacher, async (req, res) => {
-    try {
-        const err = validationResult(req);
-        if (!err.isEmpty()) return res.status(422).send(err);
+// router.put('/lesson-title/:id', verifyAdminOrTeacher, async (req, res) => {
+//     try {
+//         const err = validationResult(req);
+//         if (!err.isEmpty()) return res.status(422).send(err);
         
-        const { title } = matchedData(req);
-        const section = await Section.findByIdAndUpdate(req.params.id, {title}, { new: true });
-        res.send(section);
-    } catch (error) {
-        res.send(error);
-    }
-})
+//         const { title } = matchedData(req);
+//         const section = await Section.findByIdAndUpdate(req.params.id, {title}, { new: true });
+//         res.send(section);
+//     } catch (error) {
+//         res.send(error);
+//     }
+// })
 
-router.put('/section/:id', verifyAdminOrTeacher, async (req, res) => {
+router.put('/lesson/:id', verifyAdminOrTeacher, async (req, res) => {
     try {
         const err = validationResult(req);
         if (!err.isEmpty()) return res.status(422).send(err);
@@ -66,14 +67,14 @@ router.put('/section/:id', verifyAdminOrTeacher, async (req, res) => {
         const newData = {
             ...data
         }
-        const section = await Section.findByIdAndUpdate(req.params.id, newData, { new: true });
-        res.send(section);
+        const lesson = await Lesson.findByIdAndUpdate(req.params.id, newData, { new: true });
+        res.send(lesson);
     } catch (error) {
         res.send(error);
     }
 })
 
-router.delete('/section/:id', verifyAdminOrTeacher, async (req, res) => {
+router.delete('/lesson/:id', verifyAdminOrTeacher, async (req, res) => {
     try {
         await Section.findByIdAndDelete(req.params.id);
         res.send("Section deleted successfully");
