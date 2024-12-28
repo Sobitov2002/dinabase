@@ -79,10 +79,11 @@ router.put('/lesson/:id', verifyAdminOrTeacher, async (req, res) => {
 
 router.delete('/lesson/:id', verifyAdminOrTeacher, async (req, res) => {
     try {
-        await Section.findByIdAndDelete(req.params.id);
-        res.send("Section deleted successfully");
+        await Lesson.findByIdAndDelete(req.params.id);
+        const lessons = await Lesson.find({sectionId: req.body.sectionId});
+        res.send(lessons);
     } catch (error) {
-        res.send("Something went wrong by deleting section", error);
+        res.send("Something went wrong by deleting lesson", error);
     }
 })
 

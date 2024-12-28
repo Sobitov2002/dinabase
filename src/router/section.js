@@ -4,6 +4,7 @@ import { groupValidation } from "../utils/validation.js";
 import { generateSequence } from '../utils/sequenceGenerator.js';
 import { verifyAdminOrTeacher } from "../utils/verifyAdminOrTeacher.js";
 import { Section } from "../mongoose/schemas/section.js";
+import { Lesson } from "../mongoose/schemas/lesson.js";
 
 const router = Router();
 
@@ -76,6 +77,7 @@ router.put('/section/:id', verifyAdminOrTeacher, async (req, res) => {
 router.delete('/section/:id', verifyAdminOrTeacher, async (req, res) => {
     try {
         await Section.findByIdAndDelete(req.params.id);
+        await Lesson.deleteMany({sectionId: req.params.id});
         res.send("Section deleted successfully");
     } catch (error) {
         res.send("Something went wrong by deleting section", error);
