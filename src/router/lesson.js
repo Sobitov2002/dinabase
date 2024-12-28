@@ -79,12 +79,12 @@ router.put('/lesson/:id', verifyAdminOrTeacher, async (req, res) => {
 
 router.delete('/lesson/:id', verifyAdminOrTeacher, async (req, res) => {
     try {
-        const exsistSection = await Section.findById(req.body.sectionId);
+        const lesson = await Lesson.findByIdAndDelete(req.params.id);
+        const exsistSection = await Section.findById(lesson.sectionId);
         if(!exsistSection) return res.status(400).send({message: "Bunday section mavjud emas"});
         exsistSection.lessonId = exsistSection.lessonId.filter(item => item != req.params.id);
         await exsistSection.save();
-        await Lesson.findByIdAndDelete(req.params.id);
-        const lessons = await Lesson.find({sectionId: req.body.sectionId});
+        const lessons = await Lesson.find({sectionId: lesson.sectionId});
         res.send(lessons);
     } catch (error) {
         res.send("Something went wrong by deleting lesson", error);
