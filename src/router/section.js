@@ -45,7 +45,7 @@ router.post('/section', verifyAdminOrTeacher,  async (req, res) => {
     }
 })
 
-router.put('/section-title/:id', async (req, res) => {
+router.put('/section-title/:id', verifyAdminOrTeacher, async (req, res) => {
     try {
         const { title } = req.body;
         const section = await Section.findByIdAndUpdate(req.params.id, {title}, { new: true });
