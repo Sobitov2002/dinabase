@@ -48,30 +48,15 @@ router.post('/lesson', verifyAdminOrTeacher,  async (req, res) => {
     }
 })
 
-// router.put('/lesson-title/:id', verifyAdminOrTeacher, async (req, res) => {
-//     try {
-//         const err = validationResult(req);
-//         if (!err.isEmpty()) return res.status(422).send(err);
-        
-//         const { title } = matchedData(req);
-//         const section = await Section.findByIdAndUpdate(req.params.id, {title}, { new: true });
-//         res.send(section);
-//     } catch (error) {
-//         res.send(error);
-//     }
-// })
-
 router.put('/lesson/:id', verifyAdminOrTeacher, async (req, res) => {
-    try {
-        const err = validationResult(req);
-        if (!err.isEmpty()) return res.status(422).send(err);
-        
-        const data = matchedData(req);
+    try {        
+        const data = req.body;
         const newData = {
             ...data
         }
-        const lesson = await Lesson.findByIdAndUpdate(req.params.id, newData, { new: true });
-        res.send(lesson);
+        await Lesson.findByIdAndUpdate(req.params.id, newData, { new: true });
+        const allLessons = await Lesson.find({sectionId: req.body.sectionId});
+        res.send(allLessons);
     } catch (error) {
         res.send(error);
     }
