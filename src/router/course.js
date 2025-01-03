@@ -3,6 +3,7 @@ import { Course } from "../mongoose/schemas/course.js";
 import { checkSchema, validationResult, matchedData } from "express-validator";
 import { verifyAdminOrTeacher } from "../utils/verifyAdminOrTeacher.js";
 import { generateSequence } from "../utils/sequenceGenerator.js";
+import { Section  } from '../mongoose/schemas/section.js'
 const router = Router();
 
 router.get('/course', verifyAdminOrTeacher, async (req, res) => {
@@ -12,6 +13,34 @@ router.get('/course', verifyAdminOrTeacher, async (req, res) => {
     } catch (error) {
         res.send(error);
     }
+})
+
+router.get('/online-courses', verifyAdminOrTeacher, async (req, res) => {
+    try {
+        const data = await Course.find({published: true}); 
+        if(data.length > 0) {
+            res.send(data);
+        } else {
+            res.send({message: "Online kurslar mavjud emas"});
+        }
+    } catch (error) {
+        res.send(error);
+    }
+})
+
+router.get('/offline-courses/:id', verifyAdminOrTeacher, async (req, res) => {
+    try {
+        const data = await Course.find({_id: {$ne: req.params.id}, published: false}); 
+        if(data.length <= 0) return res.send({message: "Offline kurslar mavjud emas"});
+        const sections = await Section.find({courseId: req.params.id})
+        const course = {
+            ...data,
+            sections:  sections 
+        }
+        res.send(course);
+    } catch (error) {
+        res.send(error);
+    }   
 })
 
 router.get('/course/:id', async (req, res) => {
