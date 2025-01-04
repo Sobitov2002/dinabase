@@ -10,7 +10,12 @@ const lessonSchema = mongoose.Schema({
         minutes: { type: Number, default: 0 },
         seconds: { type: Number, default: 0 }
     },
-    sectionId: Number
+    sectionId: Number,
+    free: {
+        type: Boolean,
+        default: false
+    },
+    userProgress: [Number]
 })
 
 export const Lesson = mongoose.model('Lesson', lessonSchema)

@@ -1,9 +1,14 @@
 import { Router } from "express";
 import { Course } from "../mongoose/schemas/course.js";
+import { Lesson } from "../mongoose/schemas/lesson.js";
+import { Progress } from "../mongoose/schemas/progress.js";
 import { checkSchema, validationResult, matchedData } from "express-validator";
 import { verifyAdminOrTeacher } from "../utils/verifyAdminOrTeacher.js";
+import { verifyToken } from "../utils/verifyToken.js";
 import { generateSequence } from "../utils/sequenceGenerator.js";
 import { Section  } from '../mongoose/schemas/section.js'
+import { model } from "mongoose";
+import { populate } from "dotenv";
 const router = Router();
 
 router.get('/course', verifyAdminOrTeacher, async (req, res) => {
@@ -15,6 +20,8 @@ router.get('/course', verifyAdminOrTeacher, async (req, res) => {
     }
 })
 
+
+// studentlar uchyun faqat publish bo'lgan kurslarni yuborish
 router.get('/online-courses', verifyAdminOrTeacher, async (req, res) => {
     try {
         const data = await Course.find({published: true}); 
@@ -28,16 +35,38 @@ router.get('/online-courses', verifyAdminOrTeacher, async (req, res) => {
     }
 })
 
-router.get('/offline-courses/:id', verifyAdminOrTeacher, async (req, res) => {
+router.get('/dashboard-course/:id', verifyToken, async (req, res) => {
     try {
-        const data = await Course.find({_id: {$ne: req.params.id}, published: false}); 
-        if(data.length <= 0) return res.send({message: "Offline kurslar mavjud emas"});
+        const course = await Course.findById(req.params.id);
         const sections = await Section.find({courseId: req.params.id})
-        const course = {
-            ...data,
-            sections:  sections 
-        }
-        res.send(course);
+            .select('title')
+            .sort({position: 1})
+            .populate({
+                path: 'lessonId',
+                model: Lesson,
+                select: 'title userProgress',
+                options: { sort: { position: 1 } },
+                populate: {
+                    path: 'userProgress',
+                    match: {userId: req.userId},
+                    model: Progress,
+                    select: 'lessonId',
+                }
+            });
+        
+        const lessons = sections.map(section => section.lessonId).flat()
+        const lessonIds = lessons.map(lesson => lesson._id)
+
+        const validCompletedLessons = await Progress.find({
+            userId: req.userId,
+            lessonId: { $in: lessonIds },
+            isCompleted: true,
+        })
+
+        const progressPercentage =
+            (validCompletedLessons.length / lessons.length) * 100
+    
+        res.send({course, sections, progressPercentage});
     } catch (error) {
         res.send(error);
     }   
@@ -78,6 +107,7 @@ router.put('/course/:id', verifyAdminOrTeacher, async (req, res) => {
     }
 })
 
+// patch
 router.patch('/course/:id', verifyAdminOrTeacher, async (req, res) => {
     try {
       const { id } = req.params;
@@ -106,6 +136,7 @@ router.patch('/course/:id', verifyAdminOrTeacher, async (req, res) => {
     }
 });
 
+// delete
 router.delete('/course/:id', verifyAdminOrTeacher, async (req, res) => {
     try {
         const course = await Course.findByIdAndDelete(req.params.id);
