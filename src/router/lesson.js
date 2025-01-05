@@ -28,6 +28,7 @@ router.post('/complete-lesson/:id', verifyToken, async (req, res) => {
         })
         const lesson = await Lesson.findById(req.params.id);
         lesson.userProgress.push(newUserProgress._id);
+
         await lesson.save();
         await newUserProgress.save();
     }
@@ -35,7 +36,7 @@ router.post('/complete-lesson/:id', verifyToken, async (req, res) => {
     res.send(data);
 })
 
-router.get('/uncomplete-lesson/:id', verifyToken, async (req, res) => {
+router.post('/uncomplete-lesson/:id', verifyToken, async (req, res) => {
     await Progress.findOneAndDelete({lessonId: req.params.id});
     const data = await getCourseDashboardData(req.body.courseId, req.userId);
     res.send(data);
