@@ -35,6 +35,12 @@ router.post('/complete-lesson/:id', verifyToken, async (req, res) => {
     res.send(data);
 })
 
+router.get('/uncomplete-lesson/:id', verifyToken, async (req, res) => {
+    await Progress.findOneAndDelete({lessonId: req.params.id});
+    const data = await getCourseDashboardData(req.body.courseId, req.userId);
+    res.send(data);
+})
+
 router.get('/lesson-all/:id', verifyAdminOrTeacher,  async (req, res) => {
     try {
         const data = await Lesson.find({sectionId: req.params.id});
