@@ -5,8 +5,35 @@ import { generateSequence } from '../utils/sequenceGenerator.js';
 import { verifyAdminOrTeacher } from "../utils/verifyAdminOrTeacher.js";
 import { Section } from "../mongoose/schemas/section.js";
 import { Lesson } from "../mongoose/schemas/lesson.js";
+import { Progress } from "../mongoose/schemas/progress.js";
+import { verifyToken } from "../utils/verifyToken.js";
+import { Course } from "../mongoose/schemas/course.js";
+import{ getCourseDashboardData} from "./course.js";
 
 const router = Router();
+
+// checknox clicked complete lesson 
+router.post('/complete-lesson/:id', verifyToken, async (req, res) => {
+    const userProgres = await Progress.findOne({userId: req.userId, lessonId: req.params.id});
+    if(userProgres) {
+       userProgres.isCompleted = true;
+       await userProgres.save(); 
+    } else {
+        const newId = await generateSequence('progress');
+        const newUserProgress = new Progress({
+            _id: newId,
+            userId: req.userId,
+            lessonId: req.params.id,
+            isCompleted: true
+        })
+        const lesson = await Lesson.findById(req.params.id);
+        lesson.userProgress.push(newUserProgress._id);
+        await lesson.save();
+        await newUserProgress.save();
+    }
+    const data = await getCourseDashboardData(req.body.courseId, req.userId);
+    res.send(data);
+})
 
 router.get('/lesson-all/:id', verifyAdminOrTeacher,  async (req, res) => {
     try {

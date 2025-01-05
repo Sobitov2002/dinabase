@@ -35,42 +35,58 @@ router.get('/online-courses', verifyAdminOrTeacher, async (req, res) => {
     }
 })
 
-router.get('/dashboard-course/:id', verifyToken, async (req, res) => {
+export async function getCourseDashboardData(courseId, userId) {
     try {
-        const course = await Course.findById(req.params.id);
-        const sections = await Section.find({courseId: req.params.id})
-            .select('title')
-            .sort({position: 1})
-            .populate({
-                path: 'lessonId',
-                model: Lesson,
-                select: 'title userProgress',
-                options: { sort: { position: 1 } },
-                populate: {
-                    path: 'userProgress',
-                    match: {userId: req.userId},
-                    model: Progress,
-                    select: 'lessonId',
-                }
-            });
-        
-        const lessons = sections.map(section => section.lessonId).flat()
-        const lessonIds = lessons.map(lesson => lesson._id)
-
-        const validCompletedLessons = await Progress.find({
-            userId: req.userId,
-            lessonId: { $in: lessonIds },
-            isCompleted: true,
-        })
-
-        const progressPercentage =
-            (validCompletedLessons.length / lessons.length) * 100
-    
-        res.send({course, sections, progressPercentage});
+      const course = await Course.findById(courseId);
+      const sections = await Section.find({ courseId })
+        .select('title')
+        .sort({ position: 1 })
+        .populate({
+          path: 'lessonId',
+          model: Lesson,
+          select: 'title userProgress',
+          options: { sort: { position: 1 } },
+          populate: {
+            path: 'userProgress',
+            match: { userId },
+            model: Progress,
+            select: 'lessonId',
+          },
+        });
+  
+      const lessons = sections.map(section => section.lessonId).flat();
+      const lessonIds = lessons.map(lesson => lesson._id);
+  
+      const validCompletedLessons = await Progress.find({
+        userId,
+        lessonId: { $in: lessonIds },
+        isCompleted: true,
+      });
+  
+      const progressPercentage =
+        lessons.length > 0
+          ? (validCompletedLessons.length / lessons.length) * 100
+          : 0;
+  
+      return { course, sections, progressPercentage };
     } catch (error) {
-        res.send(error);
-    }   
-})
+      throw error;
+    }
+}
+
+
+router.get('/dashboard-course/:id', verifyToken, async (req, res) => {
+    const { id } = req.params;
+    const userId = req.userId;
+  
+    try {
+      const data = await getCourseDashboardData(id, userId);
+      res.status(200).json(data);
+    } catch (error) {
+      console.error(error);
+      res.status(500).send({ error: 'An error occurred while fetching data.' });
+    }
+});
 
 router.get('/course/:id', async (req, res) => {
     try {
