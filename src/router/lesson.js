@@ -51,6 +51,16 @@ router.get('/lesson-all/:id', verifyAdminOrTeacher,  async (req, res) => {
     }
 })
 
+router.get('/lesson/:id', verifyToken, async (req, res) => {
+    try {
+        const data = await Lesson.findById(req.params.id); 
+        res.status(200).send(data);
+    } catch (error) {
+        res.status(500).send({message: "Lessonni topishda hatolik yuz berdi"});
+    }
+})
+
+
 router.get('/section/:id', verifyAdminOrTeacher, async (req, res) => {
     try {
         const data = await Section.findById(req.params.id); 
