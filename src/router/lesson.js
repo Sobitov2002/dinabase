@@ -53,7 +53,7 @@ router.get('/lesson-all/:id', verifyAdminOrTeacher,  async (req, res) => {
 
 router.get('/lesson/:id', verifyToken, async (req, res) => {
     try {
-        const data = await Lesson.findById(req.params.id); 
+        const data = await Lesson.findById(req.params.id).select('title videoUrl _id');
         res.status(200).send(data);
     } catch (error) {
         res.status(500).send({message: "Lessonni topishda hatolik yuz berdi"});
