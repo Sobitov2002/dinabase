@@ -12,6 +12,7 @@ import imagekit from './image-kit.js'
 import course from './course.js';
 import section from './section.js'
 import lesson from './lesson.js'
+import result from './result.js'
 
 const router = Router()
 
@@ -28,6 +29,7 @@ router.use(imagekit);
 router.use(course);
 router.use(section);
 router.use(lesson);
+router.use(result);
 
 
 export default router;
