@@ -20,7 +20,7 @@ mongoose
     .then(() => console.log('MongoDB connected'))
     .catch(err =>  console.log(err))
 
-const allowedDomains = ['http://localhost:5173', 'https://dinaeducation.netlify.app'];
+const allowedDomains = ['http://localhost:5173','http://localhost:5174', 'https://productnam.netlify.app', 'https://dinaeducation.netlify.app'];
 
 
 app.use(cors({

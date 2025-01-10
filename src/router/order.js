@@ -4,7 +4,6 @@ import { groupValidation } from "../utils/validation.js";
 import { Order } from "../mongoose/schemas/order.js";
 import { generateSequence } from '../utils/sequenceGenerator.js';
 import { verifyAdminOrTeacher } from "../utils/verifyAdminOrTeacher.js";
-import { User } from "../mongoose/schemas/user.js";
 
 const router = Router();
 
