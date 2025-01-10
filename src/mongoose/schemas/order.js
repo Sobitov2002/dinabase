@@ -6,7 +6,7 @@ const orderSchema = mongoose.Schema({
     lastName: String,
     phone: String,
     variant: String,
-    date: Date,
+    type: String,
     time: String,
 },
 { timestamps: true }

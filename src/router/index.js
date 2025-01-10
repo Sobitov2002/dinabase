@@ -13,6 +13,7 @@ import course from './course.js';
 import section from './section.js'
 import lesson from './lesson.js'
 import result from './result.js'
+import order from './order.js'
 
 const router = Router()
 
@@ -30,6 +31,7 @@ router.use(course);
 router.use(section);
 router.use(lesson);
 router.use(result);
+router.use(order);
 
 
 export default router;
