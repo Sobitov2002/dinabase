@@ -8,12 +8,12 @@ import { User } from "../mongoose/schemas/user.js";
 
 const router = Router();
 
-router.get('/order', verifyAdminOrTeacher, async (req, res) => {
+router.get('/order-video', verifyAdminOrTeacher, async (req, res) => {
     const data = await Order.find({type: "video"});
     res.send(data);
 })
 
-router.get('/order', verifyAdminOrTeacher, async (req, res) => {
+router.get('/order-lesson', verifyAdminOrTeacher, async (req, res) => {
     const data = await Order.find({type: "lesson"});
     res.send(data);
 })
