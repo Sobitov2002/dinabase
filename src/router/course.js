@@ -10,6 +10,7 @@ import { Section } from '../mongoose/schemas/section.js'
 import { model } from "mongoose";
 import { populate } from "dotenv";
 import {calculateTotalDuration} from '../utils/colculate-duration.js'
+
 const router = Router();
 
 router.get('/course', verifyAdminOrTeacher, async (req, res) => {
@@ -23,7 +24,7 @@ router.get('/course', verifyAdminOrTeacher, async (req, res) => {
 
 
 // studentlar uchyun faqat publish bo'lgan kurslarni yuborish
-router.get('/online-courses', verifyAdminOrTeacher, async (req, res) => {
+router.get('/online-courses', async (req, res) => {
   try {
     const data = await Course.find({ published: true });
     if (data.length > 0) {
