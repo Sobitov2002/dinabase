@@ -4,10 +4,77 @@ import { userValidation } from "../utils/validation.js";
 import { User } from "../mongoose/schemas/user.js";
 import { generateSequence } from '../utils/sequenceGenerator.js';
 import { hashPassword } from "../utils/hashPassword.js";   
-import {verifyAdminOrTeacher} from "../utils/verifyAdminOrTeacher.js"; 
+import {verifyAdminOrTeacher} from "../utils/verifyAdminOrTeacher.js";
+import { Group } from "../mongoose/schemas/group.js"; 
 
 const router = Router();
 
+router.get("/groups", async (req, res) => {
+    try {
+      // Barcha guruhlarni topish
+      const groups = await Group.find();
+  
+      // Har bir guruh uchun o'qituvchi va talaba ma'lumotlarini to'plash
+      const groupDetails = await Promise.all(
+        groups.map(async (group) => {
+          const users = await User.find({ group_ids: group._id });
+  
+          // O'qituvchilar va talabalar sonini aniqlash
+          const teachers = users.filter((user) => user.role === "teacher");
+          const students = users.filter((user) => user.role === "student");
+  
+          // Har bir guruh uchun natijalarni shakllantirish
+          return {
+            ...group._doc,
+            teacherCount: teachers.length,
+            studentCount: students.length,
+            teachers: teachers.map((teacher) => ({
+              id: teacher._id,
+              first_name: teacher.first_name,
+              last_name: teacher.last_name,
+            })),
+          };
+        })
+      );
+  
+      // Natijalarni qaytarish
+      res.json(groupDetails);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Server error" });
+    }
+});
+  
+
+// router.get("/groupsss/:id", async (req, res) => {
+//     try {
+//       const { id } = req.params;
+  
+//       const group = await Group.findById(id);
+//       if (!group) {
+//         return res.status(404).json({ message: "Group not found" });
+//       }
+  
+//       const users = await User.find({ group_ids: id });
+  
+//       const teachers = users.filter(user => user.role === "teacher");
+//       const students = users.filter(user => user.role === "student");
+  
+//       res.json({
+//         ...group._doc,
+//         teacherCount: teachers.length,
+//         studentCount: students.length,
+//         teachers: teachers.map(teacher => ({
+//           id: teacher._id,
+//           first_name: teacher.first_name,
+//           last_name: teacher.last_name,
+//         })),
+//       });
+//     } catch (error) {
+//       console.error(error);
+//       res.status(500).json({ message: "Server error" });
+//     }
+// });
 
 router.get('/student', verifyAdminOrTeacher, async (req, res) => {
     try {
