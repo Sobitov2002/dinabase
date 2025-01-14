@@ -9,7 +9,7 @@ import { Group } from "../mongoose/schemas/group.js";
 
 const router = Router();
 
-router.get("/groups", async (req, res) => {
+router.get("/groups", verifyAdminOrTeacher, async (req, res) => {
     try {
       // Barcha guruhlarni topish
       const groups = await Group.find();
