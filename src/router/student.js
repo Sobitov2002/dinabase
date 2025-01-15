@@ -44,6 +44,32 @@ router.get("/groups", verifyAdminOrTeacher, async (req, res) => {
       res.status(500).json({ message: "Server error" });
     }
 });
+
+router.get("/students/by-group/:id", verifyAdminOrTeacher,  async (req, res) => {
+    try {
+        const group = await Group.findById(req.params.id);
+        if (!group) {
+            return res.status(404).json({ message: "Group not found" });
+        }
+
+        const students = await User.find({ group_ids: req.params.id, role: "student" });
+        res.json({
+            ...group._doc,
+            studentCount: students.length,
+            students: students.map(student => ({
+                id: student._id,
+                first_name: student.first_name,
+                last_name: student.last_name,
+                login: student.login,
+                phone: student.phone,
+                telegram_id: student.telegram_id
+            })),
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Server error" });
+    }
+});
   
 
 // router.get("/groupsss/:id", async (req, res) => {
